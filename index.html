@@ -408,9 +408,9 @@
             }
 
             window.sendAIQuestion = async function() {
-                const question = document.getElementById('aiQuestion').value;
+                const question = `Answer the question: ${document.getElementById('aiQuestion').value}, with these notes the person made, just in case he asks for a use for them: ${notesContent}`
                 if (question) {
-                    const aiResponse = document.getElementById('aiResponse');
+                    const aiResponse = `Answer the question: document.getElementById('aiResponse')
                     aiResponse.textContent = 'Thinking...';
                     const response = await getGeminiResponse(question);
                     aiResponse.textContent = response;
