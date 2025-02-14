@@ -6,10 +6,11 @@
     <title>Learn AI</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Helvetica Neue', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: #f0f2f5;
+            color: #333;
         }
         .container {
             display: flex;
@@ -17,34 +18,59 @@
             min-height: 100vh;
         }
         header {
-            background-color: #333;
+            background-color: #4267B2;
             color: white;
-            padding: 10px;
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         header nav button {
             margin: 0 10px;
-            padding: 5px 10px;
-            background: #555;
+            padding: 10px 20px;
+            background: #365899;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+        header nav button:hover {
+            background: #2e4a87;
         }
         .sidebar {
-            width: 200px;
-            background: #444;
+            width: 250px;
+            background: #365899;
             color: white;
             padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar button {
+            width: 100%;
+            padding: 15px;
+            background: #4267B2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .sidebar button:hover {
+            background: #3b5998;
         }
         main {
             flex: 1;
             padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
         #notesSection {
-            background: #fff;
+            background: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         #notesList {
             margin-top: 20px;
@@ -53,24 +79,33 @@
             width: 100%;
             height: 100px;
             margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button {
-            padding: 10px;
-            background: #007bff;
+            padding: 10px 20px;
+            background: #0078d4;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #005a9e;
         }
         .quizBox {
             position: fixed;
             bottom: 20px;
             right: 20px;
             background: #fff;
-            border: 2px solid #007bff;
-            padding: 10px;
+            border: 2px solid #0078d4;
+            padding: 20px;
             display: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .modal {
             display: none;
@@ -80,14 +115,16 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.5);
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
+            margin: 10% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .close {
             color: #aaa;
@@ -99,10 +136,27 @@
         .login-form, .register-form {
             display: none;
             flex-direction: column;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .login-form input, .register-form input {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .ai-interaction {
+            margin-top: 20px;
+        }
+        .ai-interaction textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 16px;
         }
     </style>
@@ -119,6 +173,8 @@
         </header>
         <aside class="sidebar">
             <button id="toggleQuiz" onclick="toggleQuiz()">Toggle Quiz</button>
+            <button id="askAI" onclick="askAI()">Ask AI</button>
+            <button id="generateNotes" onclick="generateNotes()">Generate Notes</button>
         </aside>
         <main>
             <section id="notesSection">
@@ -127,6 +183,12 @@
                 <textarea id="noteInput" placeholder="Write your note here..."></textarea>
                 <button id="addNote" onclick="addNote()">Add Note</button>
             </section>
+            <div class="ai-interaction" id="aiInteraction" style="display:none;">
+                <h2>Ask AI</h2>
+                <textarea id="aiQuestion" placeholder="Ask the AI a question..."></textarea>
+                <button onclick="sendAIQuestion()">Send</button>
+                <p id="aiResponse"></p>
+            </div>
             <div class="login-form" id="loginForm">
                 <h2>Login</h2>
                 <input type="text" id="loginUsername" placeholder="Username">
@@ -338,6 +400,30 @@
                 const prompt = `Question: ${question}\nStudent Answer: ${answer}\nPlease evaluate this answer concisely and provide brief constructive feedback.`;
                 const feedback = await getGeminiResponse(prompt);
                 modalMessage.textContent = feedback;
+            }
+
+            window.askAI = function() {
+                const aiInteraction = document.getElementById('aiInteraction');
+                aiInteraction.style.display = aiInteraction.style.display === 'none' ? 'block' : 'none';
+            }
+
+            window.sendAIQuestion = async function() {
+                const question = document.getElementById('aiQuestion').value;
+                if (question) {
+                    const aiResponse = document.getElementById('aiResponse');
+                    aiResponse.textContent = 'Thinking...';
+                    const response = await getGeminiResponse(question);
+                    aiResponse.textContent = response;
+                }
+            }
+
+            window.generateNotes = async function() {
+                const notesContent = notes.map(note => note.content).join('\n');
+                const prompt = `Based on these notes:\n${notesContent}\n\nGenerate additional notes that complement the existing ones.`;
+                const newNotes = await getGeminiResponse(prompt);
+                notes.push({ content: newNotes });
+                saveData();
+                displayNotes();
             }
 
             document.querySelector('.close').addEventListener('click', () => {
