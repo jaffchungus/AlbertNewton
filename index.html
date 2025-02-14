@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Guide</title>
+    <title>Learn AI</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -96,15 +96,25 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .login-form, .register-form {
+            display: none;
+            flex-direction: column;
+        }
+        .login-form input, .register-form input {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Study Guide</h1>
+            <h1>Learn AI</h1>
             <nav>
-                <button id="loginBtn" onclick="login()">Login</button>
-                <button id="registerBtn" onclick="register()">Register</button>
+                <button id="loginBtn" onclick="showLoginForm()">Login</button>
+                <button id="registerBtn" onclick="showRegisterForm()">Register</button>
+                <button id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
             </nav>
         </header>
         <aside class="sidebar">
@@ -117,6 +127,26 @@
                 <textarea id="noteInput" placeholder="Write your note here..."></textarea>
                 <button id="addNote" onclick="addNote()">Add Note</button>
             </section>
+            <div class="login-form" id="loginForm">
+                <h2>Login</h2>
+                <input type="text" id="loginUsername" placeholder="Username">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <label><input type="checkbox" id="rememberMe"> Remember me</label>
+                <button onclick="login()">Login</button>
+            </div>
+            <div class="register-form" id="registerForm">
+                <h2>Register</h2>
+                <input type="text" id="registerUsername" placeholder="Username">
+                <input type="password" id="registerPassword" placeholder="Password">
+                <input type="text" id="grade" placeholder="Grade">
+                <input type="text" id="subject" placeholder="Subject">
+                <select id="proficiency">
+                    <option value="below-average">Below Average</option>
+                    <option value="average">Average</option>
+                    <option value="above-average">Above Average</option>
+                </select>
+                <button onclick="register()">Register</button>
+            </div>
         </main>
     </div>
     <div id="quizBox" class="quizBox">
@@ -132,10 +162,10 @@
         </div>
     </div>
     <script>
-        // script.js
         document.addEventListener('DOMContentLoaded', () => {
             let notes = [];
             let users = [];
+            let currentUser = null;
 
             async function getGeminiResponse(prompt) {
                 const geminiApiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
@@ -175,14 +205,24 @@
             function saveData() {
                 localStorage.setItem('notes', JSON.stringify(notes));
                 localStorage.setItem('users', JSON.stringify(users));
+                if (currentUser && document.getElementById('rememberMe').checked) {
+                    localStorage.setItem('currentUser', currentUser.username);
+                }
             }
 
             function loadData() {
                 notes = JSON.parse(localStorage.getItem('notes')) || [];
                 users = JSON.parse(localStorage.getItem('users')) || [];
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    currentUser = users.find(user => user.username === storedUser);
+                    if (currentUser) {
+                        document.getElementById('loginBtn').style.display = 'none';
+                        document.getElementById('registerBtn').style.display = 'none';
+                        document.getElementById('logoutBtn').style.display = 'inline';
+                    }
+                }
             }
-
-            loadData();
 
             function displayNotes() {
                 const notesList = document.getElementById('notesList');
@@ -202,7 +242,7 @@
                 }
             }
 
-            document.getElementById('addNote').addEventListener('click', () => {
+            window.addNote = function() {
                 const content = document.getElementById('noteInput').value;
                 if (content) {
                     notes.push({
@@ -212,29 +252,66 @@
                     document.getElementById('noteInput').value = '';
                     displayNotes();
                 }
-            });
+            }
 
-            document.getElementById('loginBtn').addEventListener('click', () => {
-                const username = prompt("Enter username:");
-                if (users.some(user => user.username === username)) {
+            window.showLoginForm = function() {
+                document.getElementById('loginForm').style.display = 'flex';
+                document.getElementById('registerForm').style.display = 'none';
+            }
+
+            window.showRegisterForm = function() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'flex';
+            }
+
+            window.login = function() {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                currentUser = users.find(user => user.username === username && user.password === password);
+                if (currentUser) {
                     alert("Logged in!");
+                    document.getElementById('loginBtn').style.display = 'none';
+                    document.getElementById('registerBtn').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'inline';
+                    document.getElementById('loginForm').style.display = 'none';
+                    saveData();
                 } else {
-                    alert("User not found. Please register.");
+                    alert("Invalid username or password.");
                 }
-            });
+            }
 
-            document.getElementById('registerBtn').addEventListener('click', () => {
-                const username = prompt("Choose a username:");
-                if (username) {
+            window.register = function() {
+                const username = document.getElementById('registerUsername').value;
+                const password = document.getElementById('registerPassword').value;
+                const grade = document.getElementById('grade').value;
+                const subject = document.getElementById('subject').value;
+                const proficiency = document.getElementById('proficiency').value;
+                if (username && password && grade && subject && proficiency) {
                     users.push({
-                        username
+                        username,
+                        password,
+                        grade,
+                        subject,
+                        proficiency
                     });
                     saveData();
                     alert("Registration successful!");
+                    document.getElementById('registerForm').style.display = 'none';
+                } else {
+                    alert("Please fill in all fields.");
                 }
-            });
+            }
 
-            document.getElementById('toggleQuiz').addEventListener('click', async () => {
+            window.logout = function() {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                document.getElementById('loginBtn').style.display = 'inline';
+                document.getElementById('registerBtn').style.display = 'inline';
+                document.getElementById('logoutBtn').style.display = 'none';
+                alert("Logged out!");
+            }
+
+            window.toggleQuiz = async function() {
                 const quizBox = document.getElementById('quizBox');
                 quizBox.style.display = quizBox.style.display === 'none' ? 'block' : 'none';
                 if (quizBox.style.display === 'block' && notes.length > 0) {
@@ -245,9 +322,9 @@
                     const question = await getGeminiResponse(prompt);
                     quizQuestion.textContent = question;
                 }
-            });
+            }
 
-            document.getElementById('submitAnswer').addEventListener('click', async () => {
+            window.submitAnswer = async function() {
                 const answer = document.getElementById('quizAnswer').value;
                 const question = document.getElementById('quizQuestion').textContent;
                 if (!answer) {
@@ -261,12 +338,13 @@
                 const prompt = `Question: ${question}\nStudent Answer: ${answer}\nPlease evaluate this answer concisely and provide brief constructive feedback.`;
                 const feedback = await getGeminiResponse(prompt);
                 modalMessage.textContent = feedback;
-            });
+            }
 
             document.querySelector('.close').addEventListener('click', () => {
                 document.getElementById('modal').style.display = 'none';
             });
 
+            loadData();
             displayNotes();
         });
     </script>
