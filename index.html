@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Where You Feel Home AI</title>
+    <title>Photo Caption AI</title>
     <style>
         body {
             font-family: 'Helvetica Neue', sans-serif;
@@ -66,78 +66,59 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin: 20px;
         }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        #notesSection {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #notesList {
+        .photo-upload {
             margin-top: 20px;
         }
-        #noteInput {
-            width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+        .photo-upload input {
+            display: none;
         }
-        button {
+        .photo-upload label {
             padding: 10px 20px;
             background: #0078d4;
             color: white;
-            border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
         }
-        button:hover {
+        .photo-upload label:hover {
             background: #005a9e;
         }
-        .quizBox {
-            position: fixed;
+        .photo-display {
+            margin-top: 20px;
+            position: relative;
+        }
+        .photo-display img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .photo-display .caption {
+            position: absolute;
             bottom: 20px;
-            right: 20px;
-            background: #fff;
-            border: 2px solid #0078d4;
-            padding: 20px;
-            display: none;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .settings {
+            margin-top: 20px;
+        }
+        .settings label {
+            margin-right: 10px;
+        }
+        .photo-history {
+            margin-top: 20px;
+        }
+        .photo-history img {
+            max-width: 100%;
+            margin-bottom: 10px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
+        .photo-history button {
+            margin-top: 10px;
         }
         .login-form, .register-form {
             display: none;
@@ -154,51 +135,12 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-        .ai-interaction {
-            margin-top: 20px;
-        }
-        .ai-interaction textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .talk-section {
-            margin-top: 20px;
-        }
-        .talk-section textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .image-upload {
-            margin-top: 20px;
-        }
-        .image-upload input {
-            display: none;
-        }
-        .image-upload label {
-            padding: 10px 20px;
-            background: #0078d4;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .image-upload label:hover {
-            background: #005a9e;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Where You Feel Home AI</h1>
+            <h1>Photo Caption AI</h1>
             <nav>
                 <button id="loginBtn" onclick="showLoginForm()">Login</button>
                 <button id="registerBtn" onclick="showRegisterForm()">Register</button>
@@ -206,37 +148,36 @@
             </nav>
         </header>
         <aside class="sidebar">
-            <button onclick="showTab('learning')">Learning</button>
-            <button onclick="showTab('talk')">Talk About It with AI</button>
-            <button onclick="showTab('chat')">Chat</button>
+            <button onclick="showTab('upload')">Upload Photo</button>
+            <button onclick="showTab('history')">Photo History</button>
         </aside>
         <main>
-            <div id="learningTab" class="tab-content active">
-                <section id="notesSection">
-                    <h2>Your Notes</h2>
-                    <div id="notesList"></div>
-                    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-                    <button id="addNote" onclick="addNote()">Add Note</button>
-                </section>
-            </div>
-            <div id="talkTab" class="tab-content">
-                <section class="talk-section">
-                    <h2>Talk About It with AI</h2>
-                    <textarea id="talkInput" placeholder="Talk about anything..."></textarea>
-                    <button onclick="startTalkSession()">Start Talk</button>
-                    <p id="talkResponse"></p>
-                    <div class="image-upload">
-                        <input type="file" id="imageUpload" accept="image/*">
-                        <label for="imageUpload">Upload Image</label>
+            <div id="uploadTab" class="tab-content active">
+                <section class="photo-upload">
+                    <h2>Upload Photo</h2>
+                    <input type="file" id="photoUpload" accept="image/*">
+                    <label for="photoUpload">Choose Photo</label>
+                    <div class="settings">
+                        <label>
+                            <input type="radio" name="fontStyle" value="Formal" checked> Formal
+                        </label>
+                        <label>
+                            <input type="radio" name="fontStyle" value="Fun"> Fun
+                        </label>
+                        <label>
+                            <input type="radio" name="fontStyle" value="Default"> Default
+                        </label>
+                    </div>
+                    <div class="photo-display">
+                        <img id="uploadedPhoto" src="" alt="Uploaded Photo">
+                        <div class="caption" id="photoCaption"></div>
                     </div>
                 </section>
             </div>
-            <div id="chatTab" class="tab-content">
-                <section class="ai-interaction">
-                    <h2>Chat</h2>
-                    <textarea id="chatInput" placeholder="Chat with the AI..."></textarea>
-                    <button onclick="sendChatMessage()">Send</button>
-                    <div id="chatHistory"></div>
+            <div id="historyTab" class="tab-content">
+                <section class="photo-history">
+                    <h2>Photo History</h2>
+                    <div id="photoHistory"></div>
                 </section>
             </div>
             <div class="login-form" id="loginForm">
@@ -250,29 +191,15 @@
                 <h2>Register</h2>
                 <input type="text" id="registerUsername" placeholder="Username">
                 <input type="password" id="registerPassword" placeholder="Password">
-                <input type="text" id="grade" placeholder="Grade">
-                <input type="text" id="subject" placeholder="Subject">
-                <select id="proficiency">
-                    <option value="below-average">Below Average</option>
-                    <option value="average">Average</option>
-                    <option value="above-average">Above Average</option>
-                </select>
                 <button onclick="register()">Register</button>
             </div>
         </main>
     </div>
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <p id="modalMessage"></p>
-        </div>
-    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let notes = [];
             let users = [];
             let currentUser = null;
-            let chatHistory = [];
+            let photoHistory = [];
 
             async function getGeminiResponse(prompt) {
                 const geminiApiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
@@ -310,15 +237,14 @@
             }
 
             function saveData() {
-                localStorage.setItem('notes', JSON.stringify(notes));
                 localStorage.setItem('users', JSON.stringify(users));
                 if (currentUser && document.getElementById('rememberMe').checked) {
                     localStorage.setItem('currentUser', currentUser.username);
                 }
+                localStorage.setItem('photoHistory', JSON.stringify(photoHistory));
             }
 
             function loadData() {
-                notes = JSON.parse(localStorage.getItem('notes')) || [];
                 users = JSON.parse(localStorage.getItem('users')) || [];
                 const storedUser = localStorage.getItem('currentUser');
                 if (storedUser) {
@@ -329,35 +255,26 @@
                         document.getElementById('logoutBtn').style.display = 'inline';
                     }
                 }
+                photoHistory = JSON.parse(localStorage.getItem('photoHistory')) || [];
+                displayPhotoHistory();
             }
 
-            function displayNotes() {
-                const notesList = document.getElementById('notesList');
-                notesList.innerHTML = '';
-                notes.forEach((note, index) => {
-                    const noteElement = document.createElement('div');
-                    noteElement.innerHTML = `<p>${note.content}</p> <button onclick="deleteNote(${index})">Delete</button>`;
-                    notesList.appendChild(noteElement);
+            function displayPhotoHistory() {
+                const photoHistoryElem = document.getElementById('photoHistory');
+                photoHistoryElem.innerHTML = '';
+                photoHistory.forEach((photo, index) => {
+                    const photoElement = document.createElement('div');
+                    photoElement.innerHTML = `<img src="${photo.url}" alt="History Photo">
+                                              <button onclick="deletePhoto(${index})">Delete</button>`;
+                    photoHistoryElem.appendChild(photoElement);
                 });
             }
 
-            window.deleteNote = function(index) {
-                if (confirm('Are you sure you want to delete this note?')) {
-                    notes.splice(index, 1);
+            window.deletePhoto = function(index) {
+                if (confirm('Are you sure you want to delete this photo?')) {
+                    photoHistory.splice(index, 1);
                     saveData();
-                    displayNotes();
-                }
-            }
-
-            window.addNote = function() {
-                const content = document.getElementById('noteInput').value;
-                if (content) {
-                    notes.push({
-                        content
-                    });
-                    saveData();
-                    document.getElementById('noteInput').value = '';
-                    displayNotes();
+                    displayPhotoHistory();
                 }
             }
 
@@ -390,16 +307,10 @@
             window.register = function() {
                 const username = document.getElementById('registerUsername').value;
                 const password = document.getElementById('registerPassword').value;
-                const grade = document.getElementById('grade').value;
-                const subject = document.getElementById('subject').value;
-                const proficiency = document.getElementById('proficiency').value;
-                if (username && password && grade && subject && proficiency) {
+                if (username && password) {
                     users.push({
                         username,
-                        password,
-                        grade,
-                        subject,
-                        proficiency
+                        password
                     });
                     saveData();
                     alert("Registration successful!");
@@ -425,51 +336,50 @@
                 document.getElementById(tabId + 'Tab').classList.add('active');
             }
 
-            window.startTalkSession = async function() {
-                const question = document.getElementById('talkInput').value;
-                if (question) {
-                    const talkResponse = document.getElementById('talkResponse');
-                    talkResponse.textContent = 'Thinking...';
-                    const prompt = `User's proficiency: ${currentUser.proficiency}\nSubject: ${currentUser.subject}\nGrade: ${currentUser.grade}\n\nQuestion: ${question}\n\nProvide a detailed explanation and guidance based on the user's proficiency level.`;
-                    const response = await getGeminiResponse(prompt);
-                    talkResponse.textContent = response;
-                }
-            }
-
-            window.sendChatMessage = async function() {
-                const message = document.getElementById('chatInput').value;
-                if (message) {
-                    const chatHistoryElem = document.getElementById('chatHistory');
-                    chatHistory.push({ role: 'user', content: message });
-                    chatHistoryElem.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-                    document.getElementById('chatInput').value = '';
-
-                    const prompt = chatHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n');
-                    const response = await getGeminiResponse(prompt);
-                    chatHistory.push({ role: 'ai', content: response });
-                    chatHistoryElem.innerHTML += `<p><strong>AI:</strong> ${response}</p>`;
-                    chatHistoryElem.scrollTop = chatHistoryElem.scrollHeight;
-                }
-            }
-
-            document.getElementById('imageUpload').addEventListener('change', function(event) {
+            document.getElementById('photoUpload').addEventListener('change', async function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = async function(e) {
                         const imageUrl = e.target.result;
-                        document.getElementById('talkResponse').innerHTML += `<img src="${imageUrl}" alt="Uploaded Image" style="max-width: 100%; margin-top: 20px;">`;
+                        document.getElementById('uploadedPhoto').src = imageUrl;
+
+                        // Generate caption
+                        const caption = await getGeminiResponse(`Generate a caption for this photo: ${imageUrl}`);
+                        document.getElementById('photoCaption').textContent = caption;
+
+                        // Save photo to history
+                        photoHistory.push({ url: imageUrl, caption: caption });
+                        saveData();
+                        displayPhotoHistory();
+
+                        // Apply styling based on settings
+                        const fontStyle = document.querySelector('input[name="fontStyle"]:checked').value;
+                        applyCaptionStyle(fontStyle);
                     };
                     reader.readAsDataURL(file);
                 }
             });
 
-            document.querySelector('.close').addEventListener('click', () => {
-                document.getElementById('modal').style.display = 'none';
-            });
+            function applyCaptionStyle(fontStyle) {
+                const captionElem = document.getElementById('photoCaption');
+                switch (fontStyle) {
+                    case 'Formal':
+                        captionElem.style.fontFamily = 'serif';
+                        captionElem.style.color = 'white';
+                        break;
+                    case 'Fun':
+                        captionElem.style.fontFamily = 'cursive';
+                        captionElem.style.color = 'yellow';
+                        break;
+                    case 'Default':
+                        captionElem.style.fontFamily = 'sans-serif';
+                        captionElem.style.color = 'white';
+                        break;
+                }
+            }
 
             loadData();
-            displayNotes();
         });
     </script>
 </body>
