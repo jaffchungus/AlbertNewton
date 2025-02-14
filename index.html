@@ -66,6 +66,12 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin: 20px;
         }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
         #notesSection {
             background: #f9f9f9;
             padding: 20px;
@@ -183,29 +189,33 @@
             </nav>
         </header>
         <aside class="sidebar">
+            <button onclick="showTab('notes')">Notes</button>
+            <button onclick="showTab('tutor')">Tutor</button>
             <button id="toggleQuiz" onclick="toggleQuiz()">Toggle Quiz</button>
             <button id="askAI" onclick="askAI()">Ask AI</button>
-            <button id="generateNotes" onclick="generateNotes()">Generate Notes</button>
-            <button id="tutorHelp" onclick="tutorHelp()">Tutor Help</button>
         </aside>
         <main>
-            <section id="notesSection">
-                <h2>Your Notes</h2>
-                <div id="notesList"></div>
-                <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-                <button id="addNote" onclick="addNote()">Add Note</button>
-            </section>
+            <div id="notesTab" class="tab-content active">
+                <section id="notesSection">
+                    <h2>Your Notes</h2>
+                    <div id="notesList"></div>
+                    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+                    <button id="addNote" onclick="addNote()">Add Note</button>
+                </section>
+            </div>
+            <div id="tutorTab" class="tab-content">
+                <section id="tutorSection">
+                    <h2>Tutor Session</h2>
+                    <textarea id="tutorQuestion" placeholder="Ask the tutor for help..."></textarea>
+                    <button onclick="startTutorSession()">Start Session</button>
+                    <p id="tutorResponse"></p>
+                </section>
+            </div>
             <div class="ai-interaction" id="aiInteraction" style="display:none;">
                 <h2>Ask AI</h2>
                 <textarea id="aiQuestion" placeholder="Ask the AI a question..."></textarea>
                 <button onclick="sendAIQuestion()">Send</button>
                 <p id="aiResponse"></p>
-            </div>
-            <div class="tutor-section" id="tutorSection" style="display:none;">
-                <h2>Tutor Help</h2>
-                <textarea id="tutorQuestion" placeholder="Ask the tutor for help..."></textarea>
-                <button onclick="sendTutorQuestion()">Send</button>
-                <p id="tutorResponse"></p>
             </div>
             <div class="login-form" id="loginForm">
                 <h2>Login</h2>
@@ -435,28 +445,31 @@
                 }
             }
 
-            window.generateNotes = async function() {
-                const notesContent = notes.map(note => note.content).join('\n');
-                const prompt = `Based on these notes:\n${notesContent}\n\nGenerate additional notes that complement the existing ones.`;
-                const newNotes = await getGeminiResponse(prompt);
-                notes.push({ content: newNotes });
-                saveData();
-                displayNotes();
+            window.showTab = function(tabId) {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById(tabId + 'Tab').classList.add('active');
             }
 
-            window.tutorHelp = function() {
-                const tutorSection = document.getElementById('tutorSection');
-                tutorSection.style.display = tutorSection.style.display === 'none' ? 'block' : 'none';
-            }
-
-            window.sendTutorQuestion = async function() {
+            window.startTutorSession = async function() {
                 const question = document.getElementById('tutorQuestion').value;
                 if (question) {
                     const tutorResponse = document.getElementById('tutorResponse');
                     tutorResponse.textContent = 'Thinking...';
-                    const prompt = `User's proficiency: ${currentUser.proficiency}\nSubject: ${currentUser.subject}\nGrade: ${currentUser.grade}\n\nQuestion: ${question}\n\nProvide a detailed explanation and guidance based on the user's proficiency level.`;
+                    const prompt = `User's proficiency: ${currentUser.proficiency}\nSubject: ${currentUser.subject}\nGrade: ${currentUser.grade}\n\nQuestion: ${question}\n\nProvide a detailed explanation and guidance based on the user's proficiency level. Highlight important points to add to notes.`;
                     const response = await getGeminiResponse(prompt);
                     tutorResponse.textContent = response;
+
+                    // Extract important points and add to notes
+                    const importantPoints = response.match(/Important Point: (.+)/g);
+                    if (importantPoints) {
+                        importantPoints.forEach(point => {
+                            notes.push({ content: point });
+                        });
+                        saveData();
+                        displayNotes();
+                    }
                 }
             }
 
