@@ -9,7 +9,7 @@
     /* Global Styles */
     body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
     
-    /* Login/Register Container */
+    /* Authentication (Login/Register) Container */
     #authContainer {
       max-width: 400px; margin: 100px auto; background: #fff; padding: 30px; border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -132,6 +132,23 @@
   </div>
   
   <script>
+    // Global variable for user credentials loaded from JSON and/or localStorage
+    let allUsers = {};
+    
+    // On load, fetch the external JSON file and merge with any locally stored modifications.
+    fetch("users.json")
+      .then(response => response.json())
+      .then(data => {
+        // If localStorage has "users", merge them (localStorage overrides fetched data)
+        let stored = JSON.parse(localStorage.getItem("users") || "{}");
+        allUsers = Object.assign({}, data, stored);
+        localStorage.setItem("users", JSON.stringify(allUsers));
+      })
+      .catch(error => {
+        console.error("Error fetching users.json:", error);
+        allUsers = JSON.parse(localStorage.getItem("users") || "{}");
+      });
+    
     // Gemini API configuration using the provided API key and best model endpoint
     const apiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
     const modelEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
@@ -152,7 +169,7 @@
       document.getElementById("loginForm").style.display = "block";
     }
     
-    // Register new user
+    // Register new user: add to global allUsers and update localStorage
     function register(e) {
       e.preventDefault();
       const username = document.getElementById("registerUsername").value.trim();
@@ -162,25 +179,23 @@
         alert("Passwords do not match.");
         return false;
       }
-      let users = JSON.parse(localStorage.getItem("users") || "{}");
-      if (users[username]) {
+      if (allUsers[username]) {
         alert("Username already exists.");
         return false;
       }
-      users[username] = { password: password };
-      localStorage.setItem("users", JSON.stringify(users));
+      allUsers[username] = { password: password };
+      localStorage.setItem("users", JSON.stringify(allUsers));
       alert("Registration successful. Please log in.");
       showLogin();
       return false;
     }
     
-    // Login function: check credentials from stored users
+    // Login function: check credentials using the global allUsers object
     function login(e) {
       e.preventDefault();
       const username = document.getElementById("loginUsername").value.trim();
       const password = document.getElementById("loginPassword").value;
-      let users = JSON.parse(localStorage.getItem("users") || "{}");
-      if (!users[username] || users[username].password !== password) {
+      if (!allUsers[username] || allUsers[username].password !== password) {
         alert("Invalid username or password.");
         return false;
       }
@@ -200,9 +215,9 @@
     
     // Load chats for the current user from localStorage
     function loadChats() {
-      const stored = localStorage.getItem("chatHistory_" + currentUser);
-      if (stored) {
-        chats = JSON.parse(stored);
+      const storedChats = localStorage.getItem("chatHistory_" + currentUser);
+      if (storedChats) {
+        chats = JSON.parse(storedChats);
       } else {
         chats = [];
       }
