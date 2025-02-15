@@ -40,8 +40,11 @@
       font-size: 1.2em;
       cursor: move;
       resize: both;
-      overflow: auto;
-      transition: all 0.3s ease;
+      overflow: visible;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 90%;
+      text-align: center;
     }
     #captionOverlay.editing { border: 2px dashed #fff; }
     
@@ -165,8 +168,7 @@
 
     let currentUser = null;
     let isEditing = false;
-    let overlayPosition = { x: 0, y: 0 };
-    let overlaySize = { width: 150, height: 50 };
+    // Overlay position will update on drag; its size is now flexible.
 
     // Login System
     function login(e) {
@@ -224,7 +226,7 @@
       }
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
       const style = document.getElementById('styleSelect').value;
-      // Your API key provided below:
+      // Use the provided API key with Gemini:
       const apiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
       try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
@@ -233,7 +235,7 @@
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `Generate an engaging, creative caption in a ${style} style for the uploaded image using Gemini AI.`
+                text: `Generate a concise, engaging caption (up to 100 characters) in a ${style} style for the uploaded image using Gemini AI.`
               }]
             }]
           })
@@ -250,14 +252,14 @@
     function applyCaption(caption, style) {
       const styleConfig = STYLES[style];
       const overlay = document.getElementById('captionOverlay');
+      // Update text and assign a tooltip for full caption view
       overlay.textContent = caption;
+      overlay.setAttribute('title', caption);
       overlay.style.fontFamily = styleConfig.font;
       overlay.style.color = document.getElementById('colorPicker').value;
       overlay.style.backgroundColor = styleConfig.bg;
-      overlay.style.width = overlaySize.width + 'px';
-      overlay.style.height = overlaySize.height + 'px';
       
-      // Position based on style configuration
+      // Positioning based on style
       switch(styleConfig.position) {
         case 'bottom-center':
           overlay.style.bottom = '10px';
@@ -348,7 +350,6 @@
       img.src = canvas.toDataURL();
       img.onload = () => {
         ctx.drawImage(img, 0, 0);
-        // Apply caption styles onto canvas
         const computedStyle = window.getComputedStyle(overlay);
         const fontSize = computedStyle.fontSize || "24px";
         const fontFamily = computedStyle.fontFamily;
@@ -382,15 +383,15 @@
       ctx.drawImage(newCanvas, 0, 0);
     }
 
-    // Crop Image to overlay size
+    // Crop Image to overlay area
     function cropImage() {
       const canvas = document.getElementById('imageCanvas');
       const ctx = canvas.getContext('2d');
       const overlay = document.getElementById('captionOverlay');
-      const x = overlayPosition.x || 0;
-      const y = overlayPosition.y || 0;
-      const width = overlaySize.width;
-      const height = overlaySize.height;
+      const x = overlay.offsetLeft;
+      const y = overlay.offsetTop;
+      const width = overlay.offsetWidth;
+      const height = overlay.offsetHeight;
       const croppedData = ctx.getImageData(x, y, width, height);
       canvas.width = width;
       canvas.height = height;
@@ -405,8 +406,6 @@
       function moveAt(clientX, clientY) {
         overlay.style.left = clientX - shiftX + 'px';
         overlay.style.top = clientY - shiftY + 'px';
-        overlayPosition.x = clientX - shiftX;
-        overlayPosition.y = clientY - shiftY;
       }
       function onMouseMove(event) {
         moveAt(event.clientX, event.clientY);
@@ -416,11 +415,6 @@
         document.removeEventListener('mousemove', onMouseMove);
         document.onmouseup = null;
       };
-    });
-
-    overlay.addEventListener('mouseup', () => {
-      overlaySize.width = overlay.offsetWidth;
-      overlaySize.height = overlay.offsetHeight;
     });
 
     // Initial Check
