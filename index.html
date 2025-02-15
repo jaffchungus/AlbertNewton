@@ -361,28 +361,13 @@
       saveToHistory(imageData, overlay.textContent, style);
     }
 
-    // Download Image with overlay caption
+    // Download Image without re-drawing the caption overlay onto the canvas
     function downloadImage() {
       const canvas = document.getElementById('imageCanvas');
-      const ctx = canvas.getContext('2d');
-      const overlay = document.getElementById('captionOverlay');
-      const img = new Image();
-      img.src = canvas.toDataURL();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        const computedStyle = window.getComputedStyle(overlay);
-        const fontSize = computedStyle.fontSize || "24px";
-        const fontFamily = computedStyle.fontFamily;
-        ctx.font = `${fontSize} ${fontFamily}`;
-        ctx.fillStyle = computedStyle.color;
-        const x = parseInt(overlay.style.left) || 20;
-        const y = parseInt(overlay.style.top) || 20;
-        ctx.fillText(overlay.textContent, x, y);
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL();
-        link.download = 'captioned_image.png';
-        link.click();
-      };
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL();
+      link.download = 'image.png';
+      link.click();
     }
 
     // Rotate Image 90° Clockwise
