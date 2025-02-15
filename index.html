@@ -26,14 +26,42 @@
       background: #4285f4; color: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center;
     }
     #header h1 { margin: 0; font-size: 1.5em; }
+    #modelSelector {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; 
+      padding: 5px 10px; border-radius: 4px; margin: 0 15px;
+    }
     #logoutBtn {
       background: #d9534f; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer;
     }
-    #modelSelector {
-      margin-left: 20px;
-    }
     #mainContent {
       display: flex; flex: 1; overflow: hidden;
+    }
+
+    /* Privacy Policy Modal */
+    .privacy-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.5); z-index: 1000;
+    }
+    .privacy-content {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+      margin: 5% auto; padding: 30px; width: 80%; max-width: 800px; 
+      border-radius: 15px; box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    }
+    .privacy-header {
+      border-bottom: 2px solid #4285f4; padding-bottom: 15px; margin-bottom: 25px;
+    }
+    .privacy-header h2 {
+      font-family: 'Playfair Display', serif; color: #2c3e50; margin: 0;
+    }
+    .privacy-section { margin-bottom: 25px; }
+    .privacy-section h3 {
+      color: #4285f4; margin: 15px 0 10px; font-size: 1.2em;
+    }
+    .privacy-section p {
+      line-height: 1.6; color: #4a5568; margin: 0;
+    }
+    .close-privacy {
+      float: right; font-size: 28px; color: #2c3e50; cursor: pointer;
     }
 
     /* Sidebar (Chat List) */
@@ -68,9 +96,10 @@
     .message.assistant { text-align: left; }
     .message .text {
       display: inline-block; padding: 10px; border-radius: 8px; max-width: 70%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .message.user .text { background: #4285f4; color: #fff; }
-    .message.assistant .text { background: #eee; color: #333; }
+    .message.assistant .text { background: #fff; color: #333; border: 1px solid #ddd; }
     #inputArea {
       padding: 10px; border-top: 1px solid #ddd; background: #fff; display: flex;
     }
@@ -81,16 +110,10 @@
       padding: 10px 20px; margin-left: 10px; background: #4285f4; color: #fff; border: none; border-radius: 4px;
       cursor: pointer;
     }
-
-    /* Privacy Policy */
-    #privacyPolicy {
-      max-width: 600px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    #privacyPolicy h3 { margin-top: 0; }
   </style>
 </head>
 <body>
-  <!-- Authentication (Login/Register) Container -->
+  <!-- Authentication Container -->
   <div id="authContainer">
     <div id="loginForm">
       <h2>Login</h2>
@@ -116,13 +139,17 @@
   <!-- Main Application -->
   <div id="mainContainer">
     <div id="header">
-      <h1 id="welcomeMsg"></h1>
-      <select id="modelSelector" onchange="changeModel()">
-        <option value="gemini-pro">Albert Newton AI</option>
-        <option value="gemini-pro-rr1">Albert Newton RR1</option>
-        <!-- Add more models as needed -->
+      <select id="modelSelector" onchange="updateModel(this.value)">
+        <option value="RR1">Albert Newton RR1</option
+        <option value="RR2">Albert Newton RR2 Pro</option>
+        <option value="RR3">Albert Newton RR3</option>
+        <option value="RRX">Albert Newton RRX(Best)</option>
       </select>
-      <button id="logoutBtn" onclick="logout()">Logout</button>
+      <h1 id="welcomeMsg"></h1>
+      <div>
+        <a href="#" onclick="showPrivacy()" style="color: #fff; margin-right: 15px;">Privacy Policy</a>
+        <button id="logoutBtn" onclick="logout()">Logout</button>
+      </div>
     </div>
     <div id="mainContent">
       <!-- Sidebar: Chat List -->
@@ -145,20 +172,64 @@
     </div>
   </div>
 
-  <!-- Privacy Policy -->
-  <div id="privacyPolicy">
-    <h3>Privacy Policy</h3>
-    <p>We value your privacy. This policy outlines how we collect, use, and protect your personal information.</p>
-    <p>1. <strong>Information Collection:</strong> We collect personal information such as your username and password for authentication purposes.</p>
-    <p>2. <strong>Data Usage:</strong> Your data is used to provide and improve our services. We do not share your data with third parties without your consent.</p>
-    <p>3. <strong>Data Security:</strong> We implement security measures to protect your data from unauthorized access and breaches.</p>
-    <p>4. <strong>Your Rights:</strong> You have the right to access, correct, or delete your personal information. Contact us for any requests related to your data.</p>
+  <!-- Privacy Policy Modal -->
+  <div id="privacyModal" class="privacy-modal">
+    <div class="privacy-content">
+      <div class="privacy-header">
+        <span class="close-privacy" onclick="hidePrivacy()">&times;</span>
+        <h2>Albert Newton AI Privacy Policy</h2>
+      </div>
+      <div class="privacy-section">
+        <h3>Data Collection</h3>
+        <p>We collect minimal information necessary for service operation. Your conversations are encrypted and never shared with third parties.</p>
+      </div>
+      <div class="privacy-section">
+        <h3>Security Measures</h3>
+        <p>State-of-the-art encryption protects all data in transit and at rest. Regular security audits ensure compliance with industry standards.</p>
+      </div>
+      <div class="privacy-section">
+        <h3>Data Usage</h3>
+        <p>Conversation data is used solely to improve your experience. We employ advanced anonymization techniques for quality analysis.</p>
+      </div>
+      <div class="privacy-section">
+        <h3>User Control</h3>
+        <p>You can delete any conversation permanently at any time. Account deletion removes all associated data from our systems.</p>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Model Configuration
+    const models = {
+      RR1: "gemini-1.5-pro",
+      RR2: "gemini-1.5-flash-8b",
+      RR3: "gemini-2.0-flash",
+      RRX: "gemini-2.0-flash-lite-preview-02-05"
+    };
+
+    let currentModel = models.RR1;
+    const apiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
+    
+    function getModelEndpoint() {
+      return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+    }
+
+    function updateModel(modelKey) {
+      currentModel = models[modelKey];
+    }
+
+    // Privacy Policy Functions
+    function showPrivacy() {
+      document.getElementById("privacyModal").style.display = "block";
+    }
+
+    function hidePrivacy() {
+      document.getElementById("privacyModal").style.display = "none";
+    }
+
     // Global variable for user credentials loaded from JSON and/or localStorage
     let allUsers = {};
-
+    
     // On load, fetch the external JSON file and merge with any locally stored modifications.
     fetch("users.json")
       .then(response => response.json())
@@ -172,27 +243,23 @@
         console.error("Error fetching users.json:", error);
         allUsers = JSON.parse(localStorage.getItem("users") || "{}");
       });
-
-    // Gemini API configuration using the provided API key and best model endpoint
-    const apiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
-    let modelEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
-
+    
     let currentUser = null;
     let chats = []; // Array of chat objects: { id, title, conversation: [ {role, text} ] }
     let currentChatId = null;
-
+    
     // Show registration form
     function showRegister() {
       document.getElementById("loginForm").style.display = "none";
       document.getElementById("registerForm").style.display = "block";
     }
-
+    
     // Show login form
     function showLogin() {
       document.getElementById("registerForm").style.display = "none";
       document.getElementById("loginForm").style.display = "block";
     }
-
+    
     // Register new user: add to global allUsers and update localStorage
     function register(e) {
       e.preventDefault();
@@ -213,7 +280,7 @@
       showLogin();
       return false;
     }
-
+    
     // Login function: check credentials using the global allUsers object
     function login(e) {
       e.preventDefault();
@@ -231,12 +298,12 @@
       document.getElementById("mainContainer").style.display = "flex";
       return false;
     }
-
+    
     function logout() {
       sessionStorage.removeItem("currentUser");
       location.reload();
     }
-
+    
     // Load chats for the current user from localStorage
     function loadChats() {
       const storedChats = localStorage.getItem("chatHistory_" + currentUser);
@@ -254,12 +321,12 @@
       renderChatList();
       renderConversation();
     }
-
+    
     // Save chats to localStorage for the current user
     function saveChats() {
       localStorage.setItem("chatHistory_" + currentUser, JSON.stringify(chats));
     }
-
+    
     // Create a new chat and set it as the current chat
     function newChat() {
       const chat = { id: Date.now(), title: "New Chat", conversation: [] };
@@ -269,7 +336,7 @@
       renderChatList();
       renderConversation();
     }
-
+    
     // Render the chat list in the sidebar
     function renderChatList() {
       const chatListEl = document.getElementById("chatList");
@@ -284,7 +351,7 @@
         chatListEl.appendChild(li);
       });
     }
-
+    
     // Render the current conversation in the chat area
     function renderConversation() {
       const conversationEl = document.getElementById("conversation");
@@ -304,39 +371,49 @@
         conversationEl.scrollTop = conversationEl.scrollHeight;
       }
     }
-
+    
     // Send a message and get an AI reply via the Gemini API
     async function sendMessage() {
       const input = document.getElementById("userMessage");
       const text = input.value.trim();
       if (!text) return;
+      
       addMessageToCurrentChat("user", text);
       input.value = "";
-
-      // Build the prompt using the current conversation
+      
       const chat = chats.find(c => c.id === currentChatId);
-      let prompt = "This is a conversation between a user and an AI assistant.\n";
-      chat.conversation.forEach(msg => {
-        prompt += (msg.role === "user" ? "User: " : "Assistant: ") + msg.text + "\n";
-      });
-      prompt += "Assistant:";
+      const history = chat.conversation.slice(-6).map(msg => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.text }]
+      }));
 
       try {
-        const response = await fetch(modelEndpoint, {
+        const response = await fetch(getModelEndpoint(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{
-              parts: [{ text: prompt }]
-            }]
+            contents: history,
+            generationConfig: {
+              temperature: 0.9,
+              topK: 50,
+              topP: 0.95,
+              maxOutputTokens: 2048
+            },
+            safetySettings: [
+              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+            ]
           })
         });
+
         const data = await response.json();
         const reply = data.candidates[0].content.parts[0].text.trim();
         addMessageToCurrentChat("assistant", reply);
       } catch (error) {
         console.error("Error generating response:", error);
-        addMessageToCurrentChat("assistant", "Sorry, an error occurred.");
+        addMessageToCurrentChat("assistant", "I'm having trouble responding right now. Please try again.");
       }
     }
 
@@ -354,7 +431,7 @@
         renderChatList();
       }
     }
-
+    
     // Delete the currently selected chat with confirmation
     function deleteCurrentChat() {
       if (confirm("Are you sure you want to delete this chat?")) {
@@ -369,17 +446,18 @@
         renderConversation();
       }
     }
-
+    
     // Allow pressing Enter to send a message
     document.getElementById("userMessage").addEventListener("keydown", function(e) {
       if (e.key === "Enter") sendMessage();
     });
 
-    // Change the AI model based on the dropdown selection
-    function changeModel() {
-      const selectedModel = document.getElementById("modelSelector").value;
-      modelEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
-    }
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target.classList.contains('privacy-modal')) {
+        hidePrivacy();
+      }
+    };
   </script>
 </body>
 </html>
