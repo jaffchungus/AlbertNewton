@@ -8,27 +8,35 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; background: #f0f2f5; }
         .hidden { display: none !important; }
-        
+
         /* Login Styles */
-        #loginContainer { 
-            max-width: 400px; margin: 100px auto; background: white; 
+        #loginContainer {
+            max-width: 400px; margin: 100px auto; background: white;
             padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .login-form input { width: 100%; margin-bottom: 1rem; padding: 0.8rem; }
         .login-form button { width: 100%; padding: 1rem; background: #4285f4; color: white; border: none; }
-        
+
         /* Main App Styles */
         #appContainer { max-width: 1200px; margin: 0 auto; }
-        .toolbar { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .toolbar { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
         .preview-container { position: relative; max-width: 600px; margin: 2rem 0; }
         #imagePreview { max-width: 100%; display: none; }
-        #captionOverlay { position: absolute; max-width: 80%; padding: 10px; }
-        
+        #captionOverlay {
+            position: absolute;
+            max-width: 80%;
+            padding: 10px;
+            cursor: move;
+            resize: both;
+            overflow: auto;
+        }
+
         .history-section { margin-top: 3rem; }
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
         .photo-item { position: relative; border: 1px solid #ddd; padding: 5px; }
         .photo-item img { width: 100%; height: 150px; object-fit: cover; }
         .delete-btn { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; }
+        .edit-btn { position: absolute; top: 5px; left: 5px; background: blue; color: white; border: none; }
     </style>
 </head>
 <body>
@@ -47,7 +55,7 @@
     <div id="appContainer" class="hidden">
         <button onclick="logout()" style="float: right;">Logout</button>
         <h1>AI Photo Caption Generator</h1>
-        
+
         <div class="toolbar">
             <input type="file" id="imageUpload" accept="image/*">
             <select id="styleSelect">
@@ -55,12 +63,69 @@
                 <option value="formal">Formal</option>
                 <option value="fun">Fun</option>
             </select>
+            <select id="fontSelect">
+                <option value="Arial">Arial</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Palatino">Palatino</option>
+                <option value="Garamond">Garamond</option>
+                <option value="Bookman">Bookman</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Trebuchet MS">Trebuchet MS</option>
+                <option value="Arial Black">Arial Black</option>
+                <option value="Impact">Impact</option>
+                <option value="Century Gothic">Century Gothic</option>
+                <option value="Lucida Sans">Lucida Sans</option>
+                <option value="Lucida Console">Lucida Console</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="Geneva">Geneva</option>
+                <option value="Gill Sans">Gill Sans</option>
+                <option value="Optima">Optima</option>
+                <option value="Futura">Futura</option>
+                <option value="Baskerville">Baskerville</option>
+                <option value="Didot">Didot</option>
+                <option value="Cambria">Cambria</option>
+                <option value="Calibri">Calibri</option>
+                <option value="Candara">Candara</option>
+                <option value="Consolas">Consolas</option>
+                <option value="Corbel">Corbel</option>
+                <option value="Franklin Gothic">Franklin Gothic</option>
+                <option value="Rockwell">Rockwell</option>
+                <option value="Segoe UI">Segoe UI</option>
+                <option value="Lato">Lato</option>
+                <option value="Open Sans">Open Sans</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Oswald">Oswald</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Lora">Lora</option>
+                <option value="PT Serif">PT Serif</option>
+                <option value="Source Sans Pro">Source Sans Pro</option>
+                <option value="Ubuntu">Ubuntu</option>
+                <option value="Droid Sans">Droid Sans</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Inconsolata">Inconsolata</option>
+                <option value="Amatic SC">Amatic SC</option>
+                <option value="Pacifico">Pacifico</option>
+                <option value="Quicksand">Quicksand</option>
+                <option value="Bebas Neue">Bebas Neue</option>
+            </select>
+            <input type="color" id="colorPicker" value="#ffffff">
             <button onclick="generateCaption()">Generate Caption</button>
+            <button onclick="downloadImage()">Download Image</button>
+            <button onclick="rotateImage()">Rotate Image</button>
+            <button onclick="cropImage()">Crop Image</button>
         </div>
 
         <div class="preview-container">
             <canvas id="imageCanvas"></canvas>
-            <div id="captionOverlay"></div>
+            <div id="captionOverlay" contenteditable="true"></div>
+            <button id="editIcon" onclick="editCaption()" style="position: absolute; top: 10px; right: 10px; background: blue; color: white; border: none;">Edit</button>
         </div>
 
         <div class="history-section">
@@ -77,6 +142,9 @@
         };
 
         let currentUser = null;
+        let isEditing = false;
+        let overlayPosition = { x: 0, y: 0 };
+        let overlaySize = { width: 0, height: 0 };
 
         // Login System
         function login(e) {
@@ -112,11 +180,11 @@
         document.getElementById('imageUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
-            
+
             reader.onload = function(event) {
                 const img = new Image();
                 img.src = event.target.result;
-                
+
                 img.onload = () => {
                     const canvas = document.getElementById('imageCanvas');
                     canvas.width = img.width;
@@ -160,16 +228,16 @@
         function applyCaption(caption, style) {
             const styleConfig = STYLES[style];
             const overlay = document.getElementById('captionOverlay');
-            
+
             overlay.textContent = caption;
             overlay.style.fontFamily = styleConfig.font;
-            overlay.style.color = styleConfig.color;
+            overlay.style.color = document.getElementById('colorPicker').value;
             overlay.style.backgroundColor = styleConfig.bg;
-            
+
             // Position calculation
             const container = document.querySelector('.preview-container');
             const { width, height } = container.getBoundingClientRect();
-            
+
             switch(styleConfig.position) {
                 case 'bottom-center':
                     overlay.style.bottom = '10px';
@@ -185,6 +253,11 @@
                     overlay.style.left = '50%';
                     overlay.style.transform = 'translate(-50%, -50%)';
             }
+
+            overlay.style.width = overlaySize.width + 'px';
+            overlay.style.height = overlaySize.height + 'px';
+            overlay.style.top = overlayPosition.y + 'px';
+            overlay.style.left = overlayPosition.x + 'px';
         }
 
         // Photo History
@@ -213,6 +286,108 @@
             localStorage.setItem(currentUser, JSON.stringify(history));
             loadHistory();
         }
+
+        // Edit Caption
+        function editCaption() {
+            const overlay = document.getElementById('captionOverlay');
+            isEditing = !isEditing;
+            overlay.contentEditable = isEditing;
+            overlay.style.border = isEditing ? '1px dashed #000' : 'none';
+
+            if (isEditing) {
+                overlay.focus();
+            } else {
+                saveToHistory(document.getElementById('imageCanvas').toDataURL(), overlay.textContent, document.getElementById('styleSelect').value);
+            }
+        }
+
+        // Download Image
+        function downloadImage() {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('captionOverlay');
+
+            // Draw the image
+            const img = new Image();
+            img.src = canvas.toDataURL();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0);
+
+                // Draw the caption
+                ctx.font = `${overlay.style.fontSize} ${overlay.style.fontFamily}`;
+                ctx.fillStyle = overlay.style.color;
+                ctx.fillText(overlay.textContent, parseInt(overlay.style.left), parseInt(overlay.style.top));
+
+                // Download the image
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL();
+                link.download = 'captioned_image.png';
+                link.click();
+            };
+        }
+
+        // Rotate Image
+        function rotateImage() {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Rotate the image 90 degrees clockwise
+            const newCanvas = document.createElement('canvas');
+            newCanvas.width = canvas.height;
+            newCanvas.height = canvas.width;
+            const newCtx = newCanvas.getContext('2d');
+            newCtx.translate(newCanvas.width / 2, newCanvas.height / 2);
+            newCtx.rotate(Math.PI / 2);
+            newCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+
+            // Update the original canvas
+            canvas.width = newCanvas.width;
+            canvas.height = newCanvas.height;
+            ctx.drawImage(newCanvas, 0, 0);
+        }
+
+        // Crop Image
+        function cropImage() {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('captionOverlay');
+
+            // Crop the image to the size of the overlay
+            const imageData = ctx.getImageData(overlayPosition.x, overlayPosition.y, overlaySize.width, overlaySize.height);
+            canvas.width = overlaySize.width;
+            canvas.height = overlaySize.height;
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // Move and Resize Overlay
+        const overlay = document.getElementById('captionOverlay');
+        overlay.addEventListener('mousedown', (e) => {
+            const shiftX = e.clientX - overlay.getBoundingClientRect().left;
+            const shiftY = e.clientY - overlay.getBoundingClientRect().top;
+
+            function moveAt(clientX, clientY) {
+                overlay.style.left = clientX - shiftX + 'px';
+                overlay.style.top = clientY - shiftY + 'px';
+                overlayPosition.x = clientX - shiftX;
+                overlayPosition.y = clientY - shiftY;
+            }
+
+            function onMouseMove(event) {
+                moveAt(event.clientX, event.clientY);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.onmouseup = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.onmouseup = null;
+            };
+        });
+
+        overlay.addEventListener('resize', (e) => {
+            overlaySize.width = overlay.offsetWidth;
+            overlaySize.height = overlay.offsetHeight;
+        });
 
         // Initial Check
         window.onload = () => {
