@@ -233,7 +233,7 @@
       reader.readAsDataURL(file);
     });
 
-    // Caption Generation using Gemini API endpoint (UI prompt text no longer mentions Gemini)
+    // Caption Generation using Gemini API endpoint (image data is now included in the payload)
     async function generateCaption() {
       const canvas = document.getElementById('imageCanvas');
       if (!canvas.width || !canvas.height) {
@@ -250,7 +250,8 @@
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `Generate a concise, engaging caption (up to 100 characters) in a ${style} style for the uploaded image.`
+                text: `Generate a concise, engaging caption (up to 100 characters) in a ${style} style for the following image:`,
+                image: imageData
               }]
             }]
           })
@@ -369,10 +370,10 @@
       offscreenCanvas.height = originalCanvas.height;
       const offCtx = offscreenCanvas.getContext('2d');
       
-      // Draw the original image from the canvas
+      // Draw the original image
       offCtx.drawImage(originalCanvas, 0, 0);
       
-      // Get the caption overlay and its computed style
+      // Get caption overlay details
       const overlay = document.getElementById('captionOverlay');
       const overlayStyle = window.getComputedStyle(overlay);
       const fontSize = overlayStyle.fontSize || "16px";
@@ -382,23 +383,19 @@
       offCtx.textAlign = "center";
       offCtx.textBaseline = "middle";
       
-      // Get the bounding rectangles of the preview container and the overlay
+      // Calculate overlay position relative to the preview container
       const containerRect = document.querySelector('.preview-container').getBoundingClientRect();
       const overlayRect = overlay.getBoundingClientRect();
+      const x = overlayRect.left - containerRect.left + overlayRect.width / 2;
+      const y = overlayRect.top - containerRect.top + overlayRect.height / 2;
       
-      // Calculate overlay position relative to the container/canvas
-      const x = overlayRect.left - containerRect.left;
-      const y = overlayRect.top - containerRect.top;
-      
-      // Split text into lines if needed and determine line height
+      // Split text into lines if needed
       const captionText = overlay.innerText;
       const lines = captionText.split('\n');
       const lineHeight = parseFloat(fontSize) * 1.2;
-      const centerX = x + overlayRect.width / 2;
-      const startY = y + overlayRect.height / 2 - ((lines.length - 1) * lineHeight) / 2;
-      
+      const startY = y - ((lines.length - 1) * lineHeight) / 2;
       lines.forEach((line, i) => {
-        offCtx.fillText(line, centerX, startY + i * lineHeight);
+        offCtx.fillText(line, x, startY + i * lineHeight);
       });
       
       // Download the combined image
