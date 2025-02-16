@@ -37,6 +37,11 @@
       display: flex; flex: 1; overflow: hidden;
     }
 
+    /* User Count Display */
+    #userCount {
+      font-size: 1.2em; margin-left: 15px;
+    }
+
     /* Privacy Policy Modal */
     .privacy-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -232,28 +237,17 @@
       </div>
 
       <div class="privacy-section">
-        <h3>6. Policy Updates</h3>
-        <p>We may update this policy periodically. Continued use after changes constitutes acceptance. Significant changes will be notified through:</p>
-        <ul>
-          <li>In-service notifications</li>
-          <li>Email alerts (for registered users)</li>
-          <li>Updated timestamp display</li>
-        </ul>
-      </div>
-
-      <div class="privacy-section">
-        <h3>7. Your Rights</h3>
+        <h3>6. Your Rights</h3>
         <ul>
           <li>Request access to your data</li>
           <li>Correct inaccuracies</li>
           <li>Delete personal information</li>
           <li>Opt-out of data processing</li>
         </ul>
-        <p>Contact [your-email@domain.com] to exercise these rights.</p>
       </div>
 
       <div class="privacy-section">
-        <h3>8. Consent</h3>
+        <h3>7. Consent</h3>
         <p>By interacting with Albert Newton AI, you acknowledge reading and agreeing to this privacy policy.</p>
       </div>
     </div>
@@ -298,10 +292,12 @@
         let stored = JSON.parse(localStorage.getItem("users") || "{}");
         allUsers = Object.assign({}, data, stored);
         localStorage.setItem("users", JSON.stringify(allUsers));
+        updateUserCount();
       })
       .catch(error => {
         console.error("Error fetching users.json:", error);
         allUsers = JSON.parse(localStorage.getItem("users") || "{}");
+        updateUserCount();
       });
 
     let currentUser = null;
@@ -336,6 +332,7 @@
       }
       allUsers[username] = { password: password };
       localStorage.setItem("users", JSON.stringify(allUsers));
+      updateUserCount();
       alert("Registration successful. Please log in.");
       showLogin();
       return false;
@@ -542,9 +539,24 @@
       localStorage.setItem("chatLogs", JSON.stringify(chatLogs));
     }
 
+    // Update the user count display
+    function updateUserCount() {
+      const userCount = Object.keys(allUsers).length;
+      const userCountDisplay = document.getElementById("userCount");
+      if (userCountDisplay) {
+        userCountDisplay.textContent = `Total Users: ${userCount}`;
+      }
+    }
+
     // Ensure login form is displayed on page load
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("loginFormElement").addEventListener("submit", login);
+      // Add user count display to the header
+      const header = document.getElementById("header");
+      const userCountDisplay = document.createElement("div");
+      userCountDisplay.id = "userCount";
+      header.appendChild(userCountDisplay);
+      updateUserCount();
     });
   </script>
 </body>
