@@ -237,17 +237,28 @@
       </div>
 
       <div class="privacy-section">
-        <h3>6. Your Rights</h3>
+        <h3>6. Policy Updates</h3>
+        <p>We may update this policy periodically. Continued use after changes constitutes acceptance. Significant changes will be notified through:</p>
+        <ul>
+          <li>In-service notifications</li>
+          <li>Email alerts (for registered users)</li>
+          <li>Updated timestamp display</li>
+        </ul>
+      </div>
+
+      <div class="privacy-section">
+        <h3>7. Your Rights</h3>
         <ul>
           <li>Request access to your data</li>
           <li>Correct inaccuracies</li>
           <li>Delete personal information</li>
           <li>Opt-out of data processing</li>
         </ul>
+        <p>Contact [your-email@domain.com] to exercise these rights.</p>
       </div>
 
       <div class="privacy-section">
-        <h3>7. Consent</h3>
+        <h3>8. Consent</h3>
         <p>By interacting with Albert Newton AI, you acknowledge reading and agreeing to this privacy policy.</p>
       </div>
     </div>
@@ -284,21 +295,21 @@
     // Global variable for user credentials loaded from JSON and/or localStorage
     let allUsers = {};
 
-    // On load, fetch the external JSON file and merge with any locally stored modifications.
-    fetch("users.json")
-      .then(response => response.json())
-      .then(data => {
-        // If localStorage has "users", merge them (localStorage overrides fetched data)
+    // Function to fetch and update user data
+    async function fetchUserData() {
+      try {
+        const response = await fetch("users.json");
+        const data = await response.json();
         let stored = JSON.parse(localStorage.getItem("users") || "{}");
         allUsers = Object.assign({}, data, stored);
         localStorage.setItem("users", JSON.stringify(allUsers));
         updateUserCount();
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("Error fetching users.json:", error);
         allUsers = JSON.parse(localStorage.getItem("users") || "{}");
         updateUserCount();
-      });
+      }
+    }
 
     let currentUser = null;
     let chats = []; // Array of chat objects: { id, title, conversation: [ {role, text} ] }
@@ -453,9 +464,9 @@
           body: JSON.stringify({
             contents: history,
             generationConfig: {
-              temperature: 0.9,
+              temperature: 0.8,
               topK: 50,
-              topP: 0.95,
+              topP: 0.8,
               maxOutputTokens: 2048
             },
             safetySettings: [
@@ -557,6 +568,9 @@
       userCountDisplay.id = "userCount";
       header.appendChild(userCountDisplay);
       updateUserCount();
+      fetchUserData();
+      // Set interval to periodically fetch user data
+      setInterval(fetchUserData, 5000); // Fetch every 5 seconds
     });
   </script>
 </body>
