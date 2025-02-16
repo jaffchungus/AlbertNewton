@@ -117,7 +117,7 @@
   <div id="authContainer">
     <div id="loginForm">
       <h2>Login</h2>
-      <form onsubmit="return login(event)">
+      <form id="loginFormElement" onsubmit="return login(event)">
         <input type="text" id="loginUsername" placeholder="Username" required />
         <input type="password" id="loginPassword" placeholder="Password" required />
         <button type="submit">Login</button>
@@ -541,6 +541,11 @@
       chatLogs.push(chatLog);
       localStorage.setItem("chatLogs", JSON.stringify(chatLogs));
     }
+
+    // Ensure login form is displayed on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("loginFormElement").addEventListener("submit", login);
+    });
   </script>
 </body>
 </html>
