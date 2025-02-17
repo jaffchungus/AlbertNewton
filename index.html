@@ -585,25 +585,26 @@ button {
     }
 
     // Render the current conversation in the chat area
-    function renderConversation() {
-      const conversationEl = document.getElementById("conversation");
-      conversationEl.innerHTML = "";
-      const chat = chats.find(c => c.id === currentChatId);
-      if (chat) {
-        document.getElementById("chatTitle").textContent = chat.title;
-        chat.conversation.forEach(msg => {
-          const msgDiv = document.createElement("div");
-          msgDiv.className = "message " + msg.role;
-          const span = document.createElement("span");
-          span.className = "text";
-          span.textContent = msg.text;
-          msgDiv.appendChild(span);
-          conversationEl.appendChild(msgDiv);
-        });
-        conversationEl.scrollTop = conversationEl.scrollHeight;
-      }
-    }
-
+// Render the current conversation in the chat area
+function renderConversation() {
+  const conversationEl = document.getElementById("conversation");
+  conversationEl.innerHTML = "";
+  const chat = chats.find(c => c.id === currentChatId);
+  if (chat) {
+    document.getElementById("chatTitle").textContent = chat.title;
+    chat.conversation.forEach(msg => {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "message " + msg.role;
+      const span = document.createElement("span");
+      span.className = "text";
+      // Use innerHTML instead of textContent to render HTML tags
+      span.innerHTML = msg.text;  // Changed from textContent to innerHTML
+      msgDiv.appendChild(span);
+      conversationEl.appendChild(msgDiv);
+    });
+    conversationEl.scrollTop = conversationEl.scrollHeight;
+  }
+}
     // Send a message and get an AI reply via the Gemini API
     async function sendMessage() {
       const input = document.getElementById("userMessage");
