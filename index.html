@@ -450,11 +450,6 @@ button {
 
 const apiKey = getApiKey()
 
-getApiKey().then(apiKey => {
-    // You can use the apiKey here
-    console.log('Fetched API Key:', apiKey);
-});
-
     function getModelEndpoint() {
       return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
     }
