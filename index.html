@@ -437,18 +437,8 @@ button {
     };
 
     let currentModel = models.RR1;
-    async function getApiKey() {
-    try {
-        let response = await fetch('/api/key');
-        let data = await response.json();
-        const apiKey = data.apiKey; 
-        return apiKey;
-    } catch (error) {
-        console.error('Error fetching API key:', error);
-    }
-}
 
-const apiKey = getApiKey()
+    const apiKey = 
 
     function getModelEndpoint() {
       return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
