@@ -436,7 +436,7 @@ button {
       RRX: "gemini-2.0-flash-lite-preview-02-05"
     };
 
-    let currentModel = models.RR1;
+    let currentModel = models.RRX;
     const apiKey = "AIzaSyBExqECRKhZKt5oec5TOVqrlLG9iDOx6Tk";
 
     function getModelEndpoint() {
@@ -616,7 +616,7 @@ button {
       const chat = chats.find(c => c.id === currentChatId);
       const history = chat.conversation.slice(-6).map(msg => ({
         role: msg.role === "user" ? "user" : "model",
-        parts: [{ text: msg.text }]
+        parts: [{ text: `Answer this prompt correctly formatted, <br> is enter: ${msg.text}` }]
       }));
 
       const startTime = new Date().getTime();
@@ -649,7 +649,6 @@ button {
 
         addMessageToCurrentChat("assistant", reply);
         addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
-
         // Simulate storing data in a database
         storeInDatabase(text, reply, responseTime);
       } catch (error) {
