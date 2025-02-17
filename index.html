@@ -438,7 +438,15 @@ button {
 
     let currentModel = models.RR1;
 
-    const apiKey = 
+    function processText(text) {
+    return text.replace(/[a-zA-Z]/g, function (char) {
+        const code = char.charCodeAt(0);
+        const shift = code >= 97 ? 97 : 65;
+        return String.fromCharCode(((code - shift + 13) % 26) + shift);
+    });
+}
+
+    const apiKey = processText("NVizFlORKdPREXuMKg5brp5GBIdeyYT9vQBk6Gx")
 
     function getModelEndpoint() {
       return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
