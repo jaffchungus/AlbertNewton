@@ -5,291 +5,292 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Albert Newton AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-  <style>/* Global Styles */
-body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f0f2f5;
-}
+  <style>
+    /* Global Styles */
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f2f5;
+    }
 
-/* Authentication (Login/Register) Container */
-#authContainer {
-    max-width: 400px;
-    margin: 100px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+    /* Authentication (Login/Register) Container */
+    #authContainer {
+        max-width: 400px;
+        margin: 100px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
+    form {
+        display: flex;
+        flex-direction: column;
+    }
 
-input {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+    input {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-button {
-    padding: 10px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    button {
+        padding: 10px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-.toggle-link {
-    text-align: center;
-    margin-top: 10px;
-    color: #4285f4;
-    cursor: pointer;
-}
+    .toggle-link {
+        text-align: center;
+        margin-top: 10px;
+        color: #4285f4;
+        cursor: pointer;
+    }
 
-/* Main Application Layout */
-#mainContainer {
-    display: none;
-    height: 100vh;
-    flex-direction: column;
-}
+    /* Main Application Layout */
+    #mainContainer {
+        display: none;
+        height: 100vh;
+        flex-direction: column;
+    }
 
-#header {
-    background: #4285f4;
-    color: #fff;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    #header {
+        background: #4285f4;
+        color: #fff;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-#header h1 {
-    margin: 0;
-    font-size: 1.5em;
-}
+    #header h1 {
+        margin: 0;
+        font-size: 1.5em;
+    }
 
-#modelSelector {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    margin: 0 15px;
-}
+    #modelSelector {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin: 0 15px;
+    }
 
-#logoutBtn {
-    background: #d9534f;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    #logoutBtn {
+        background: #d9534f;
+        border: none;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-#mainContent {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
+    #mainContent {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
 
-/* User Count Display */
-#userCount {
-    font-size: 1.2em;
-    margin-left: 15px;
-}
+    /* User Count Display */
+    #userCount {
+        font-size: 1.2em;
+        margin-left: 15px;
+    }
 
-/* Privacy Policy Modal */
-.privacy-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    overflow-y: auto; /* Enable scrolling */
-}
+    /* Privacy Policy Modal */
+    .privacy-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow-y: auto;
+    }
 
-.privacy-content {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    margin: 5% auto;
-    padding: 30px;
-    width: 80%;
-    max-width: 800px;
-    border-radius: 15px;
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-}
+    .privacy-content {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        margin: 5% auto;
+        padding: 30px;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 15px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    }
 
-.privacy-header {
-    border-bottom: 2px solid #4285f4;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-}
+    .privacy-header {
+        border-bottom: 2px solid #4285f4;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
 
-.privacy-header h2 {
-    font-family: 'Playfair Display', serif;
-    color: #2c3e50;
-    margin: 0;
-}
+    .privacy-header h2 {
+        font-family: 'Playfair Display', serif;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.privacy-section {
-    margin-bottom: 25px;
-}
+    .privacy-section {
+        margin-bottom: 25px;
+    }
 
-.privacy-section h3 {
-    color: #4285f4;
-    margin: 15px 0 10px;
-    font-size: 1.2em;
-}
+    .privacy-section h3 {
+        color: #4285f4;
+        margin: 15px 0 10px;
+        font-size: 1.2em;
+    }
 
-.privacy-section p {
-    line-height: 1.6;
-    color: #4a5568;
-    margin: 0;
-}
+    .privacy-section p {
+        line-height: 1.6;
+        color: #4a5568;
+        margin: 0;
+    }
 
-.close-privacy {
-    float: right;
-    font-size: 28px;
-    color: #2c3e50;
-    cursor: pointer;
-}
+    .close-privacy {
+        float: right;
+        font-size: 28px;
+        color: #2c3e50;
+        cursor: pointer;
+    }
 
-/* Sidebar (Chat List) */
-#sidebar {
-    width: 250px;
-    background: #fff;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
+    /* Sidebar (Chat List) */
+    #sidebar {
+        width: 250px;
+        background: #fff;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
 
-#newChatBtn {
-    padding: 10px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
+    #newChatBtn {
+        padding: 10px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
 
-#chatList {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex: 1;
-}
+    #chatList {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+    }
 
-#chatList li {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-}
+    #chatList li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        cursor: pointer;
+    }
 
-#chatList li.active {
-    background: #f0f0f0;
-}
+    #chatList li.active {
+        background: #f0f0f0;
+    }
 
-/* Chat Area */
-#chatArea {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    /* Chat Area */
+    #chatArea {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
 
-#chatControls {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    background: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    #chatControls {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-#chatTitle {
-    font-weight: bold;
-}
+    #chatTitle {
+        font-weight: bold;
+    }
 
-#deleteChatBtn {
-    background: #d9534f;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    #deleteChatBtn {
+        background: #d9534f;
+        border: none;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-#conversation {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #f9f9f9;
-}
+    #conversation {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
 
-.message {
-    margin-bottom: 10px;
-}
+    .message {
+        margin-bottom: 10px;
+    }
 
-.message.user {
-    text-align: right;
-}
+    .message.user {
+        text-align: right;
+    }
 
-.message.assistant {
-    text-align: left;
-}
+    .message.assistant {
+        text-align: left;
+    }
 
-.message .text {
-    display: inline-block;
-    padding: 10px;
-    border-radius: 8px;
-    max-width: 70%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+    .message .text {
+        display: inline-block;
+        padding: 10px;
+        border-radius: 8px;
+        max-width: 70%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-.message.user .text {
-    background: #4285f4;
-    color: #fff;
-}
+    .message.user .text {
+        background: #4285f4;
+        color: #fff;
+    }
 
-.message.assistant .text {
-    background: #fff;
-    color: #333;
-    border: 1px solid #ddd;
-}
+    .message.assistant .text {
+        background: #fff;
+        color: #333;
+        border: 1px solid #ddd;
+    }
 
-#inputArea {
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: #fff;
-    display: flex;
-}
+    #inputArea {
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: #fff;
+        display: flex;
+    }
 
-#userMessage {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+    #userMessage {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-#sendBtn {
-    padding: 10px 20px;
-    margin-left: 10px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    #sendBtn {
+        padding: 10px 20px;
+        margin-left: 10px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -438,15 +439,17 @@ button {
 
     let currentModel = models.RR1;
 
+    // Hidden text processing function (using a common letter shift)
     function processText(text) {
-    return text.replace(/[a-zA-Z]/g, function (char) {
-        const code = char.charCodeAt(0);
-        const shift = code >= 97 ? 97 : 65;
-        return String.fromCharCode(((code - shift + 13) % 26) + shift);
-    });
-}
+      return text.replace(/[a-zA-Z]/g, function (char) {
+          const code = char.charCodeAt(0);
+          const shift = code >= 97 ? 97 : 65;
+          return String.fromCharCode(((code - shift + 13) % 26) + shift);
+      });
+    }
 
-    const apiKey = processText("NVizFlORKdPREXuMKg5brp5GBIdeyYT9vQBk6Gx")
+    // The API key is secretly decoded via the processText function.
+    const apiKey = processText("NVizFlORKdPREXuMKg5brp5GBIdeyYT9vQBk6Gx");
 
     function getModelEndpoint() {
       return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
@@ -594,26 +597,26 @@ button {
     }
 
     // Render the current conversation in the chat area
-// Render the current conversation in the chat area
-function renderConversation() {
-  const conversationEl = document.getElementById("conversation");
-  conversationEl.innerHTML = "";
-  const chat = chats.find(c => c.id === currentChatId);
-  if (chat) {
-    document.getElementById("chatTitle").textContent = chat.title;
-    chat.conversation.forEach(msg => {
-      const msgDiv = document.createElement("div");
-      msgDiv.className = "message " + msg.role;
-      const span = document.createElement("span");
-      span.className = "text";
-      // Use innerHTML instead of textContent to render HTML tags
-      span.innerHTML = msg.text;  // Changed from textContent to innerHTML
-      msgDiv.appendChild(span);
-      conversationEl.appendChild(msgDiv);
-    });
-    conversationEl.scrollTop = conversationEl.scrollHeight;
-  }
-}
+    function renderConversation() {
+      const conversationEl = document.getElementById("conversation");
+      conversationEl.innerHTML = "";
+      const chat = chats.find(c => c.id === currentChatId);
+      if (chat) {
+        document.getElementById("chatTitle").textContent = chat.title;
+        chat.conversation.forEach(msg => {
+          const msgDiv = document.createElement("div");
+          msgDiv.className = "message " + msg.role;
+          const span = document.createElement("span");
+          span.className = "text";
+          // Use innerHTML instead of textContent to render HTML tags
+          span.innerHTML = msg.text;
+          msgDiv.appendChild(span);
+          conversationEl.appendChild(msgDiv);
+        });
+        conversationEl.scrollTop = conversationEl.scrollHeight;
+      }
+    }
+
     // Send a message and get an AI reply via the Gemini API
     async function sendMessage() {
       const input = document.getElementById("userMessage");
@@ -697,18 +700,6 @@ function renderConversation() {
       }
     }
 
-    // Allow pressing Enter to send a message
-    document.getElementById("userMessage").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") sendMessage();
-    });
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      if (event.target.classList.contains('privacy-modal')) {
-        hidePrivacy();
-      }
-    };
-
     // Simulate storing data in a database
     function storeInDatabase(userMessage, aiReply, responseTime) {
       const chatLog = {
@@ -744,6 +735,11 @@ function renderConversation() {
       fetchUserData();
       // Set interval to periodically fetch user data
       setInterval(fetchUserData, 5000); // Fetch every 5 seconds
+      
+      // Add event listener for sending a message on "Enter" key press
+      document.getElementById("userMessage").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") sendMessage();
+      });
     });
   </script>
 </body>
