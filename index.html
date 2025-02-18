@@ -321,9 +321,9 @@
   <div id="mainContainer">
     <div id="header">
       <select id="modelSelector" onchange="updateModel(this.value)">
-        <option value="RR1">Albert Newton RR1</option>
-        <option value="RR2">Albert Newton RR2</option>
         <option value="RRX">Albert Newton RRX</option>
+        <option value="RR2">Albert Newton RR2</option>
+        <option value="RR1">Albert Newton RR1</option>
       </select>
       <h1 id="welcomeMsg"></h1>
       <div>
@@ -437,7 +437,7 @@
       RRX: "gemini-2.0-flash-lite-preview-02-05"
     };
 
-    let currentModel = models.RR1;
+    let currentModel = models.RRX;
 
     // Hidden text processing function (using a common letter shift)
     function sha256(str) {
@@ -629,7 +629,7 @@ async function sendMessage() {
   const chat = chats.find(c => c.id === currentChatId);
   const history = chat.conversation.slice(-6).map(msg => ({
     role: msg.role === "user" ? "user" : "model",
-    parts: [{ text: `Answer this prompt correctly formatted, <br> is enter, just answer the question though, and don't include this part of the prompt in the answer of the prompt: ${msg.text}` }]
+    parts: [{ text: msg.text }]
   }));
 
   const startTime = new Date().getTime();
