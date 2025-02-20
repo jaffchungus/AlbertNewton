@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Albert Newton AI</title>
@@ -432,28 +432,12 @@
   <script>
     // Model Configuration
     const models = {
-      RR1: "gemini-1.5-pro",
-      RR2: "gemini-1.5-flash",
-      RRX: "gemini-2.0-flash-lite-preview-02-05"
+      RR1: "Basic Model",
+      RR2: "Advanced Model",
+      RRX: "Premium Model"
     };
 
     let currentModel = models.RRX;
-
-    // Hidden text processing function (using a common letter shift)
-    function sha256(str) {
-  return str.replace(/[a-zA-Z]/g, (c) => {
-    const base = c <= "Z" ? 65 : 97;
-    return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
-  });
-}
-
-const encodedApiKey = "NVmnFlQ4z0IUmt-QcRLufibRuZEXYOOvJ2ApIeR";
-
-// When needed, decode it:
-const apiKey = sha256(encodedApiKey);
-    function getModelEndpoint() {
-      return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
-    }
 
     function updateModel(modelKey) {
       currentModel = models[modelKey];
@@ -617,63 +601,38 @@ const apiKey = sha256(encodedApiKey);
       }
     }
 
-    // Send a message and get an AI reply via the Gemini API
-async function sendMessage() {
-  const input = document.getElementById("userMessage");
-  const text = input.value.trim();
-  if (!text) return;
-
-  addMessageToCurrentChat("user", text);
-  input.value = "";
-
-  const chat = chats.find(c => c.id === currentChatId);
-  const history = chat.conversation.slice(-6).map(msg => ({
-    role: msg.role === "user" ? "user" : "model",
-    parts: [{ text: msg.text }]
-  }));
-
-  const startTime = new Date().getTime();
-
-  try {
-    const response = await fetch(getModelEndpoint(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: history,
-        generationConfig: {
-          temperature: 0.8,
-          topK: 50,
-          topP: 0.8,
-          maxOutputTokens: 2048
-        },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      // Log the full error details from the API
-      const errorText = await response.text();
-      throw new Error(`API error ${response.status}: ${errorText}`);
+    // Simulate AI response based on the selected model
+    function simulateAIResponse(text) {
+      let reply = "This is a simulated response.";
+      if (currentModel === models.RRX) {
+        reply = `Premium Model Response: ${text}`;
+      } else if (currentModel === models.RR2) {
+        reply = `Advanced Model Response: ${text}`;
+      } else if (currentModel === models.RR1) {
+        reply = `Basic Model Response: ${text}`;
+      }
+      return reply;
     }
 
-    const data = await response.json();
-    const reply = data.candidates[0].content.parts[0].text.trim();
-    const endTime = new Date().getTime();
-    const responseTime = (endTime - startTime) / 1000; // in seconds
+    // Send a message and get a simulated AI reply
+    function sendMessage() {
+      const input = document.getElementById("userMessage");
+      const text = input.value.trim();
+      if (!text) return;
 
-    addMessageToCurrentChat("assistant", reply);
-    addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
-    storeInDatabase(text, reply, responseTime);
-  } catch (error) {
-    console.error("Error generating response");
-    addMessageToCurrentChat("assistant", `I'm having trouble responding right now. Please try again.`);
-  }
-}
+      addMessageToCurrentChat("user", text);
+      input.value = "";
+
+      const reply = simulateAIResponse(text);
+      const responseTime = 0.5; // Simulated response time in seconds
+
+      setTimeout(() => {
+        addMessageToCurrentChat("assistant", reply);
+        addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
+        storeInDatabase(text, reply, responseTime);
+      }, responseTime * 1000);
+    }
+
     // Add a message to the current chat and update storage and UI
     function addMessageToCurrentChat(role, text) {
       const chat = chats.find(c => c.id === currentChatId);
@@ -739,7 +698,7 @@ async function sendMessage() {
       fetchUserData();
       // Set interval to periodically fetch user data
       setInterval(fetchUserData, 5000); // Fetch every 5 seconds
-      
+
       // Add event listener for sending a message on "Enter" key press
       document.getElementById("userMessage").addEventListener("keydown", function(e) {
         if (e.key === "Enter") sendMessage();
