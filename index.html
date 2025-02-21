@@ -1,356 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Albert Newton AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
   <style>
-body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f0f2f5;
-    color: #333;
-}
-
-/* Authentication (Login/Register) Container */
-#authContainer {
-    max-width: 400px;
-    margin: 100px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-}
-
-#authContainer:hover {
-    transform: translateY(-5px);
-}
-
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #4285f4;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-input {
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1em;
-}
-
-button {
-    padding: 12px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background: #357ae8;
-}
-
-.toggle-link {
-    text-align: center;
-    margin-top: 10px;
-    color: #4285f4;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-/* Main Application Layout */
-#mainContainer {
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
-}
-
-#header {
-    background: #4285f4;
-    color: #fff;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#header h1 {
-    margin: 0;
-    font-size: 1.75em;
-}
-
-#modelSelector {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin: 0 15px;
-    cursor: pointer;
-}
-
-#logoutBtn {
-    background: #d9534f;
-    border: none;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-#logoutBtn:hover {
-    background: #c9302c;
-}
-
-#mainContent {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* User Count Display */
-#userCount {
-    font-size: 1.2em;
-    margin-left: 15px;
-    color: #fff;
-}
-
-/* Privacy Policy Modal */
-.privacy-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.privacy-content {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    margin: 5% auto;
-    padding: 30px;
-    width: 80%;
-    max-width: 800px;
-    border-radius: 15px;
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.5s;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f2f5;
+        color: #333;
     }
-    to {
-        opacity: 1;
+
+    /* Authentication (Login/Register) Container */
+    #authContainer {
+        max-width: 400px;
+        margin: 100px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
     }
-}
 
-.privacy-header {
-    border-bottom: 2px solid #4285f4;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-}
+    #authContainer:hover {
+        transform: translateY(-5px);
+    }
 
-.privacy-header h2 {
-    font-family: 'Playfair Display', serif;
-    color: #2c3e50;
-    margin: 0;
-}
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #4285f4;
+    }
 
-.privacy-section {
-    margin-bottom: 25px;
-}
+    form {
+        display: flex;
+        flex-direction: column;
+    }
 
-.privacy-section h3 {
-    color: #4285f4;
-    margin: 15px 0 10px;
-    font-size: 1.2em;
-}
+    input {
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1em;
+    }
 
-.privacy-section p {
-    line-height: 1.6;
-    color: #4a5568;
-    margin: 0;
-}
+    button {
+        padding: 12px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.3s;
+    }
 
-.close-privacy {
-    float: right;
-    font-size: 28px;
-    color: #2c3e50;
-    cursor: pointer;
-}
+    button:hover {
+        background: #357ae8;
+    }
 
-/* Sidebar (Chat List) */
-#sidebar {
-    width: 250px;
-    background: #fff;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
+    .toggle-link {
+        text-align: center;
+        margin-top: 10px;
+        color: #4285f4;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
-#newChatBtn {
-    padding: 12px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background 0.3s;
-}
+    /* Main Application Layout */
+    #mainContainer {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+    }
 
-#newChatBtn:hover {
-    background: #357ae8;
-}
+    #header {
+        background: #4285f4;
+        color: #fff;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-#chatList {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex: 1;
-}
+    #header h1 {
+        margin: 0;
+        font-size: 1.75em;
+    }
 
-#chatList li {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    transition: background 0.3s;
-}
+    #modelSelector {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 6px;
+        margin: 0 15px;
+        cursor: pointer;
+    }
 
-#chatList li:hover {
-    background: #f9f9f9;
-}
+    #logoutBtn {
+        background: #d9534f;
+        border: none;
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
 
-#chatList li.active {
-    background: #e9ecef;
-}
+    #logoutBtn:hover {
+        background: #c9302c;
+    }
 
-/* Chat Area */
-#chatArea {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    #mainContent {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
 
-#chatControls {
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
-    background: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    /* Privacy Policy Modal */
+    .privacy-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow-y: auto;
+    }
 
-#chatTitle {
-    font-weight: bold;
-    font-size: 1.2em;
-}
+    .privacy-content {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        margin: 5% auto;
+        padding: 30px;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 15px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.5s;
+    }
 
-#deleteChatBtn {
-    background: #d9534f;
-    border: none;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
 
-#deleteChatBtn:hover {
-    background: #c9302c;
-}
+    .privacy-header {
+        border-bottom: 2px solid #4285f4;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
 
-#conversation {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background: #f9f9f9;
-}
+    .privacy-header h2 {
+        font-family: 'Playfair Display', serif;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.message {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: flex-start;
-}
+    .privacy-section {
+        margin-bottom: 25px;
+    }
 
-.message.user {
-    justify-content: flex-end;
-}
+    .privacy-section h3 {
+        color: #4285f4;
+        margin: 15px 0 10px;
+        font-size: 1.2em;
+    }
 
-.message.assistant {
-    justify-content: flex-start;
-}
+    .privacy-section p {
+        line-height: 1.6;
+        color: #4a5568;
+        margin: 0;
+    }
 
-.message .text {
-    max-width: 70%;
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 1em;
-}
+    .close-privacy {
+        float: right;
+        font-size: 28px;
+        color: #2c3e50;
+        cursor: pointer;
+    }
 
-.message.user .text {
-    background: #4285f4;
-    color: #fff;
-}
+    /* Sidebar (Chat List) */
+    #sidebar {
+        width: 250px;
+        background: #fff;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
 
-.message.assistant .text {
-    background: #fff;
-    color: #333;
-    border: 1px solid #ddd;
-}
+    #newChatBtn {
+        padding: 12px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.3s;
+    }
 
-#inputArea {
-    padding: 15px;
-    border-top: 1px solid #ddd;
-    background: #fff;
-    display: flex;
-    align-items: center;
-}
+    #newChatBtn:hover {
+        background: #357ae8;
+    }
 
-#userMessage {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1em;
-}
+    #chatList {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+    }
 
-#sendBtn {
-    padding: 12px 20px;
-    margin-left: 10px;
-    background: #4285f4;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background 0.3s;
-}
+    #chatList li {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
 
-#sendBtn:hover {
-    background: #357ae8;
-}
+    #chatList li:hover {
+        background: #f9f9f9;
+    }
+
+    #chatList li.active {
+        background: #e9ecef;
+    }
+
+    /* Chat Area */
+    #chatArea {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #chatControls {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #chatTitle {
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    #deleteChatBtn {
+        background: #d9534f;
+        border: none;
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    #deleteChatBtn:hover {
+        background: #c9302c;
+    }
+
+    #conversation {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
+
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message.assistant {
+        justify-content: flex-start;
+    }
+
+    .message .text {
+        max-width: 70%;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 1em;
+    }
+
+    .message.user .text {
+        background: #4285f4;
+        color: #fff;
+    }
+
+    .message.assistant .text {
+        background: #fff;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+
+    #inputArea {
+        padding: 15px;
+        border-top: 1px solid #ddd;
+        background: #fff;
+        display: flex;
+        align-items: center;
+    }
+
+    #userMessage {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1em;
+    }
+
+    #sendBtn {
+        padding: 12px 20px;
+        margin-left: 10px;
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.3s;
+    }
+
+    #sendBtn:hover {
+        background: #357ae8;
+    }
   </style>
 </head>
 <body>
@@ -501,16 +494,17 @@ button:hover {
 
     // Hidden text processing function (using a common letter shift)
     function sha256(str) {
-  return str.replace(/[a-zA-Z]/g, (c) => {
-    const base = c <= "Z" ? 65 : 97;
-    return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
-  });
-}
+      return str.replace(/[a-zA-Z]/g, (c) => {
+        const base = c <= "Z" ? 65 : 97;
+        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
+      });
+    }
 
-const encodedApiKey = "NVmnFlQ4z0IUmt-QcRLufibRuZEXYOOvJ2ApIeR";
+    const encodedApiKey = "NVmnFlQ4z0IUmt-QcRLufibRuZEXYOOvJ2ApIeR";
 
-// When needed, decode it:
-const apiKey = sha256(encodedApiKey);
+    // When needed, decode it:
+    const apiKey = sha256(encodedApiKey);
+
     function getModelEndpoint() {
       return `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
     }
@@ -539,17 +533,18 @@ const apiKey = sha256(encodedApiKey);
         let stored = JSON.parse(localStorage.getItem("users") || "{}");
         allUsers = Object.assign({}, data, stored);
         localStorage.setItem("users", JSON.stringify(allUsers));
-        updateUserCount();
       } catch (error) {
         console.error("Error fetching users.json:", error);
         allUsers = JSON.parse(localStorage.getItem("users") || "{}");
-        updateUserCount();
       }
     }
 
     let currentUser = null;
     let chats = []; // Array of chat objects: { id, title, conversation: [ {role, text} ] }
     let currentChatId = null;
+    const requestLimit = 50;
+    let requestCount = 0;
+    let requestTimestamps = [];
 
     // Show registration form
     function showRegister() {
@@ -579,7 +574,6 @@ const apiKey = sha256(encodedApiKey);
       }
       allUsers[username] = { password: password };
       localStorage.setItem("users", JSON.stringify(allUsers));
-      updateUserCount();
       alert("Registration successful. Please log in.");
       showLogin();
       return false;
@@ -678,62 +672,76 @@ const apiKey = sha256(encodedApiKey);
     }
 
     // Send a message and get an AI reply via the Gemini API
-async function sendMessage() {
-  const input = document.getElementById("userMessage");
-  const text = input.value.trim();
-  if (!text) return;
+    async function sendMessage() {
+      const input = document.getElementById("userMessage");
+      const text = input.value.trim();
+      if (!text) return;
 
-  addMessageToCurrentChat("user", text);
-  input.value = "";
+      const now = new Date();
+      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
-  const chat = chats.find(c => c.id === currentChatId);
-  const history = chat.conversation.slice(-6).map(msg => ({
-    role: msg.role === "user" ? "user" : "model",
-    parts: [{ text: msg.text }]
-  }));
+      // Filter out requests older than one hour
+      requestTimestamps = requestTimestamps.filter(timestamp => new Date(timestamp) > oneHourAgo);
+      requestCount = requestTimestamps.length;
 
-  const startTime = new Date().getTime();
+      if (requestCount < requestLimit) {
+        addMessageToCurrentChat("user", text);
+        input.value = "";
+        requestTimestamps.push(now);
+        requestCount++;
 
-  try {
-    const response = await fetch(getModelEndpoint(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: history,
-        generationConfig: {
-          temperature: 0.8,
-          topK: 50,
-          topP: 0.8,
-          maxOutputTokens: 2048
-        },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-        ]
-      })
-    });
+        const chat = chats.find(c => c.id === currentChatId);
+        const history = chat.conversation.slice(-6).map(msg => ({
+          role: msg.role === "user" ? "user" : "model",
+          parts: [{ text: msg.text }]
+        }));
 
-    if (!response.ok) {
-      // Log the full error details from the API
-      const errorText = await response.text();
-      throw new Error(`API error ${response.status}: ${errorText}`);
+        const startTime = new Date().getTime();
+
+        try {
+          const response = await fetch(getModelEndpoint(), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: history,
+              generationConfig: {
+                temperature: 0.8,
+                topK: 50,
+                topP: 0.8,
+                maxOutputTokens: 2048
+              },
+              safetySettings: [
+                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+              ]
+            })
+          });
+
+          if (!response.ok) {
+            // Log the full error details from the API
+            const errorText = await response.text();
+            throw new Error(`API error ${response.status}: ${errorText}`);
+          }
+
+          const data = await response.json();
+          const reply = data.candidates[0].content.parts[0].text.trim();
+          const endTime = new Date().getTime();
+          const responseTime = (endTime - startTime) / 1000; // in seconds
+
+          addMessageToCurrentChat("assistant", reply);
+          addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
+          storeInDatabase(text, reply, responseTime);
+        } catch (error) {
+          console.error("Error generating response");
+          addMessageToCurrentChat("assistant", `I'm having trouble responding right now. Please try again.`);
+        }
+      } else {
+        alert('You have reached the request limit. Please try again later.');
+      }
     }
 
-    const data = await response.json();
-    const reply = data.candidates[0].content.parts[0].text.trim();
-    const endTime = new Date().getTime();
-    const responseTime = (endTime - startTime) / 1000; // in seconds
-
-    addMessageToCurrentChat("assistant", reply);
-    addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
-    storeInDatabase(text, reply, responseTime);
-  } catch (error) {
-    console.error("Error generating response");
-    addMessageToCurrentChat("assistant", `I'm having trouble responding right now. Please try again.`);
-  }
-}
     // Add a message to the current chat and update storage and UI
     function addMessageToCurrentChat(role, text) {
       const chat = chats.find(c => c.id === currentChatId);
@@ -778,28 +786,11 @@ async function sendMessage() {
       localStorage.setItem("chatLogs", JSON.stringify(chatLogs));
     }
 
-    // Update the user count display
-    function updateUserCount() {
-      const userCount = Object.keys(allUsers).length;
-      const userCountDisplay = document.getElementById("userCount");
-      if (userCountDisplay) {
-        userCountDisplay.textContent = `Total Users: ${userCount}`;
-      }
-    }
-
     // Ensure login form is displayed on page load
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("loginFormElement").addEventListener("submit", login);
-      // Add user count display to the header
-      const header = document.getElementById("header");
-      const userCountDisplay = document.createElement("div");
-      userCountDisplay.id = "userCount";
-      header.appendChild(userCountDisplay);
-      updateUserCount();
       fetchUserData();
-      // Set interval to periodically fetch user data
-      setInterval(fetchUserData, 5000); // Fetch every 5 seconds
-      
+
       // Add event listener for sending a message on "Enter" key press
       document.getElementById("userMessage").addEventListener("keydown", function(e) {
         if (e.key === "Enter") sendMessage();
