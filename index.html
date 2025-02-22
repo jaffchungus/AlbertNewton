@@ -107,19 +107,86 @@ button {
       background: linear-gradient(180deg, rgba(10,15,24,0.9) 0%, rgba(10,15,24,0) 100%);
     }
 
-.logo-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(45deg, #7df9ff, #ff6f91);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 15a35 35 0 0 1 0 70 35 35 0 0 1 0-70zm0 10a25 25 0 0 0 0 50 25 25 0 0 0 0-50zm-15 25a15 15 0 1 1 30 0 15 15 0 0 1-30 0zm32.5 15l10-17.32M22.5 40l10-17.32M22.5 60l10 17.32M77.5 60l10 17.32' stroke='%23000' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center;
-  mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 15a35 35 0 0 1 0 70 35 35 0 0 1 0-70zm0 10a25 25 0 0 0 0 50 25 25 0 0 0 0-50zm-15 25a15 15 0 1 1 30 0 15 15 0 0 1-30 0zm32.5 15l10-17.32M22.5 40l10-17.32M22.5 60l10 17.32M77.5 60l10 17.32' stroke='%23000' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center;
-  animation: pulse 4s infinite;
+.logo-container {
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.9; }
+.logo-3d {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.5s ease-in-out;
+  cursor: pointer;
+}
+
+.logo-3d:hover {
+  transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg);
+}
+
+.logo-base {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(125, 249, 255, 0.3);
+  clip-path: polygon(
+    50% 0%,
+    90% 20%,
+    100% 60%,
+    75% 100%,
+    25% 100%,
+    0% 60%,
+    10% 20%
+  );
+  transform: translateZ(20px);
+  border: 2px solid #7df9ff;
+}
+
+.logo-3d::before,
+.logo-3d::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #7df9ff, #ff6f91);
+  clip-path: polygon(
+    50% 0%,
+    83% 12%,
+    100% 43%,
+    94% 78%,
+    68% 100%,
+    32% 100%,
+    6% 78%,
+    0% 43%,
+    17% 12%
+  );
+}
+
+.logo-3d::before {
+  transform: rotateX(60deg) rotateZ(30deg) translateZ(-15px);
+  opacity: 0.8;
+}
+
+.logo-3d::after {
+  transform: rotateX(-60deg) rotateZ(-30deg) translateZ(-30px);
+  opacity: 0.6;
+}
+
+.logo-3d span {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(circle at 50% 50%, 
+    rgba(125, 249, 255, 0.4) 0%,
+    rgba(125, 249, 255, 0.1) 50%,
+    transparent 100%);
+  filter: blur(20px);
+  z-index: -1;
 }
 
 .logo-text {
@@ -129,7 +196,8 @@ button {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
-  padding-left: 10px;
+  padding-left: 15px;
+  text-shadow: 0 0 15px rgba(125, 249, 255, 0.3);
 }
 
 .logo-text::after {
@@ -139,12 +207,13 @@ button {
   right: -30px;
   top: -5px;
   color: #ff6f91;
-  animation: spin 8s linear infinite;
+  animation: quantum-spin 4s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes quantum-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
 }
     .nav-links {
       display: flex;
@@ -293,12 +362,13 @@ button {
 <body>
   <div class="particles"></div>
 
-  <header class="header">
-    <div class="logo-container">
-      <div class="logo-icon"></div>
+<div class="logo-container">
+  <div class="logo-3d">
+    <div class="logo-base"></div>
+    <span></span>
+  </div>
       <div class="logo-text">Albert Newton AI</div>
-    </div>
-  </header>
+</div>
 
   <section class="hero">
     <h1>The Next Evolution in<br>Intelligent Development</h1>
@@ -311,6 +381,6 @@ button {
       <div class="feature-icon" style="mask-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M12 15a3 3 0 100-6 3 3 0 000 6zm0-12a9 9 0 016 15.66L12 21l-6-6.34A9 9 0 0112 3z\'/%3E%3C/svg%3E')"></div>
       <h3>Albert Newton AI's Story</h3>
       <p>Albert Newton AI was made to give all users a great FREE and UNLIMITED chat with a great AI.</p>
-    </div>
+  </div>
 </body>
 </html>
