@@ -673,7 +673,6 @@
       }
     }
 
-    // Send a message and get an AI reply via the Gemini API
 async function sendMessage() {
   const input = document.getElementById("userMessage");
   const text = input.value.trim();
@@ -681,66 +680,105 @@ async function sendMessage() {
 
   const now = new Date();
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-
-  // Filter out requests older than one hour
   requestTimestamps = requestTimestamps.filter(timestamp => new Date(timestamp) > oneHourAgo);
   requestCount = requestTimestamps.length;
 
-  if (requestCount < requestLimit) {
-    addMessageToCurrentChat("user", text);
-    input.value = "";
-    requestTimestamps.push(now);
-    requestCount++;
-
-    const chat = chats.find(c => c.id === currentChatId);
-    const history = chat.conversation.slice(-6).map(msg => ({
-      role: msg.role === "user" ? "user" : "model",
-      parts: [{ text: msg.text }]
-    }));
-
-    const startTime = new Date().getTime();
-
-    try {
-      const response = await fetch(getModelEndpoint(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: history,
-          generationConfig: {
-            temperature: 0.8,
-            topK: 50,
-            topP: 0.8,
-            maxOutputTokens: 2048
-          },
-          safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-          ],
-          useSearchGrounding: true  // Added search grounding parameter
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error ${response.status}: ${errorText}`);
-      }
-
-      const data = await response.json();
-      const reply = data.candidates[0].content.parts[0].text.trim();
-      const endTime = new Date().getTime();
-      const responseTime = (endTime - startTime) / 1000;
-
-      addMessageToCurrentChat("assistant", reply);
-      addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
-      storeInDatabase(text, reply, responseTime);
-    } catch (error) {
-      console.error("Error generating response");
-      addMessageToCurrentChat("assistant", `I'm having trouble responding right now. Please try again.`);
-    }
-  } else {
+  if (requestCount >= requestLimit) {
     alert('You have reached the request limit. Please try again later.');
+    return;
+  }
+
+  addMessageToCurrentChat("user", text);
+  input.value = "";
+  requestTimestamps.push(now);
+  requestCount++;
+
+  const chat = chats.find(c => c.id === currentChatId);
+  const history = chat.conversation.slice(-6).map(msg => ({
+    role: msg.role === "user" ? "user" : "model",
+    parts: [{ text: msg.text }]
+  }));
+
+  const startTime = Date.now();
+  
+  try {
+    // Attempt primary configuration with search grounding
+    const response = await fetch(getModelEndpoint(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: history,
+        generationConfig: {
+          temperature: 0.8,
+          topK: 50,
+          topP: 0.8,
+          maxOutputTokens: 2048,
+          useSearchGrounding: true  // First try putting it here
+        },
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+        ],
+        // Alternative configurations (comment/uncomment to test):
+        // useSearchGrounding: true,  // Second try as top-level parameter
+        /*
+        tools: [{
+          retrievalTool: {
+            disableAttribution: false,
+            maxSearchResults: 5
+          }
+        }]
+        */
+      })
+    });
+
+    // Log raw response details
+    console.log("API Response Status:", response.status);
+    const responseData = await response.json();
+    console.log("Full API Response:", responseData);
+
+    if (!response.ok) {
+      const errorDetails = responseData.error || await response.text();
+      console.error("API Error:", {
+        status: response.status,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: errorDetails
+      });
+      throw new Error(`API Error ${response.status}: ${errorDetails}`);
+    }
+
+    // Validate response structure
+    if (!responseData.candidates?.[0]?.content?.parts?.[0]?.text) {
+      console.error("Malformed API Response:", responseData);
+      throw new Error("Received unexpected response format from API");
+    }
+
+    // Process successful response
+    const reply = responseData.candidates[0].content.parts[0].text.trim();
+    const responseTime = (Date.now() - startTime) / 1000;
+    
+    addMessageToCurrentChat("assistant", reply);
+    addMessageToCurrentChat("info", `Response time: ${responseTime.toFixed(2)} seconds`);
+    storeInDatabase(text, reply, responseTime);
+
+  } catch (error) {
+    console.error("Full Error Details:", {
+      error: error.stack,
+      inputText: text,
+      timestamp: now.toISOString()
+    });
+    
+    // Fallback message with error details (dev mode)
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? `Error: ${error.message}` 
+      : "I'm having trouble responding right now. Please try again.";
+    
+    addMessageToCurrentChat("assistant", errorMessage);
+    
+    // Optional: Retry without grounding if enabled
+    // await retryWithoutGrounding(text, history, startTime);
   }
 }
     // Add a message to the current chat and update storage and UI
