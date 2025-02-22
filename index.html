@@ -112,19 +112,16 @@ button {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  cursor: pointer;
 }
 
+/* 3D Hexagon Structure */
 .logo-3d {
   width: 80px;
   height: 80px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1.5s ease-in-out;
-  cursor: pointer;
-}
-
-.logo-3d:hover {
-  transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg);
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .logo-base {
@@ -132,15 +129,7 @@ button {
   width: 100%;
   height: 100%;
   background: rgba(125, 249, 255, 0.3);
-  clip-path: polygon(
-    50% 0%,
-    90% 20%,
-    100% 60%,
-    75% 100%,
-    25% 100%,
-    0% 60%,
-    10% 20%
-  );
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   transform: translateZ(20px);
   border: 2px solid #7df9ff;
 }
@@ -152,29 +141,20 @@ button {
   width: 100%;
   height: 100%;
   background: linear-gradient(45deg, #7df9ff, #ff6f91);
-  clip-path: polygon(
-    50% 0%,
-    83% 12%,
-    100% 43%,
-    94% 78%,
-    68% 100%,
-    32% 100%,
-    6% 78%,
-    0% 43%,
-    17% 12%
-  );
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
 .logo-3d::before {
-  transform: rotateX(60deg) rotateZ(30deg) translateZ(-15px);
+  transform: rotateX(60deg) translateZ(-15px);
   opacity: 0.8;
 }
 
 .logo-3d::after {
-  transform: rotateX(-60deg) rotateZ(-30deg) translateZ(-30px);
+  transform: rotateY(60deg) translateZ(-30px);
   opacity: 0.6;
 }
 
+/* Glow Effect */
 .logo-3d span {
   position: absolute;
   width: 120%;
@@ -189,6 +169,7 @@ button {
   z-index: -1;
 }
 
+/* Text Styling */
 .logo-text {
   font-family: 'EB Garamond', serif;
   font-size: 2.2rem;
@@ -207,13 +188,18 @@ button {
   right: -30px;
   top: -5px;
   color: #ff6f91;
-  animation: quantum-spin 4s linear infinite;
+  animation: quantum-spin 8s linear infinite;
 }
 
 @keyframes quantum-spin {
   0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.2); }
+  50% { transform: rotate(180deg) scale(1.1); }
   100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Mouse Interaction Styles */
+.logo-container:hover .logo-3d {
+  transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
     .nav-links {
       display: flex;
@@ -367,7 +353,7 @@ button {
     <div class="logo-base"></div>
     <span></span>
   </div>
-      <div class="logo-text">Albert Newton AI</div>
+  <div class="logo-text">Albert Newton AI</div>
 </div>
 
   <section class="hero">
@@ -382,5 +368,27 @@ button {
       <h3>Albert Newton AI's Story</h3>
       <p>Albert Newton AI was made to give all users a great FREE and UNLIMITED chat with a great AI.</p>
   </div>
+  <script>
+document.querySelector('.logo-container').addEventListener('mousemove', (e) => {
+  const logo = document.querySelector('.logo-3d');
+  const rect = logo.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  const rotateX = (e.clientY - centerY) * 0.1;
+  const rotateY = (e.clientX - centerX) * -0.1;
+  
+  logo.style.transform = `
+    rotateX(${rotateX}deg)
+    rotateY(${rotateY}deg)
+    scale(1.05)
+  `;
+});
+
+document.querySelector('.logo-container').addEventListener('mouseleave', () => {
+  const logo = document.querySelector('.logo-3d');
+  logo.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+});
+</script>
 </body>
 </html>
