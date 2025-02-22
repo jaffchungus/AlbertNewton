@@ -115,47 +115,75 @@ button {
   cursor: pointer;
 }
 
-/* 3D Hexagon Structure */
+/* 3D Hexagonal Prism */
 .logo-3d {
   width: 80px;
   height: 80px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: rotateX(-15deg) rotateY(15deg);
+  transition: transform 0.8s ease-in-out;
 }
 
-.logo-base {
+.logo-3d:hover {
+  animation: diagonal-spin 4s linear infinite;
+}
+
+@keyframes diagonal-spin {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+/* Hexagon Faces */
+.hex-face {
   position: absolute;
   width: 100%;
   height: 100%;
   background: rgba(125, 249, 255, 0.3);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  transform: translateZ(20px);
   border: 2px solid #7df9ff;
-}
-
-.logo-3d::before,
-.logo-3d::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, #7df9ff, #ff6f91);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-.logo-3d::before {
-  transform: rotateX(60deg) translateZ(-15px);
+/* Front Face */
+.hex-face.front {
+  transform: translateZ(40px);
+  background: linear-gradient(45deg, #7df9ff, #ff6f91);
+}
+
+/* Back Face */
+.hex-face.back {
+  transform: rotateY(180deg) translateZ(40px);
+  background: linear-gradient(45deg, #ff6f91, #7df9ff);
+}
+
+/* Side Faces */
+.hex-face.right {
+  transform: rotateY(90deg) translateZ(40px);
+  background: linear-gradient(45deg, #7df9ff, #ff6f91);
   opacity: 0.8;
 }
 
-.logo-3d::after {
-  transform: rotateY(60deg) translateZ(-30px);
+.hex-face.left {
+  transform: rotateY(-90deg) translateZ(40px);
+  background: linear-gradient(45deg, #ff6f91, #7df9ff);
+  opacity: 0.8;
+}
+
+.hex-face.top {
+  transform: rotateX(90deg) translateZ(40px);
+  background: linear-gradient(45deg, #7df9ff, #ff6f91);
+  opacity: 0.6;
+}
+
+.hex-face.bottom {
+  transform: rotateX(-90deg) translateZ(40px);
+  background: linear-gradient(45deg, #ff6f91, #7df9ff);
   opacity: 0.6;
 }
 
 /* Glow Effect */
-.logo-3d span {
+.logo-3d::before {
+  content: '';
   position: absolute;
   width: 120%;
   height: 120%;
@@ -188,18 +216,13 @@ button {
   right: -30px;
   top: -5px;
   color: #ff6f91;
-  animation: quantum-spin 8s linear infinite;
+  animation: quantum-spin 4s linear infinite;
 }
 
 @keyframes quantum-spin {
   0% { transform: rotate(0deg) scale(1); }
   50% { transform: rotate(180deg) scale(1.1); }
   100% { transform: rotate(360deg) scale(1); }
-}
-
-/* Mouse Interaction Styles */
-.logo-container:hover .logo-3d {
-  transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
     .nav-links {
       display: flex;
@@ -350,8 +373,12 @@ button {
 
 <div class="logo-container">
   <div class="logo-3d">
-    <div class="logo-base"></div>
-    <span></span>
+    <div class="hex-face front"></div>
+    <div class="hex-face back"></div>
+    <div class="hex-face right"></div>
+    <div class="hex-face left"></div>
+    <div class="hex-face top"></div>
+    <div class="hex-face bottom"></div>
   </div>
   <div class="logo-text">Albert Newton AI</div>
 </div>
