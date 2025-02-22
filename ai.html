@@ -490,8 +490,6 @@
       RRX: "gemini-2.0-flash-lite-preview-02-05"
     };
 
-    window.history.pushState({}, {}, "/");
-
     let currentModel = models.RRX;
 
     // Hidden text processing function (using a common letter shift)
@@ -795,9 +793,7 @@
 
       // Add event listener for sending a message on "Enter" key press
       document.getElementById("userMessage").addEventListener("keydown", function(e) {
-        if (e.key === "Enter"){ 
-          sendMessage();
-        }
+        if (e.key === "Enter") sendMessage();
       });
     });
   </script>
