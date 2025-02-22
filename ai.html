@@ -673,7 +673,8 @@
       }
     }
 
-function sendMessage() {
+    // Send a message and get an AI reply via the Gemini API
+    async function sendMessage() {
       const input = document.getElementById("userMessage");
       const text = input.value.trim();
       if (!text) return;
@@ -742,6 +743,7 @@ function sendMessage() {
         alert('You have reached the request limit. Please try again later.');
       }
     }
+
     // Add a message to the current chat and update storage and UI
     function addMessageToCurrentChat(role, text) {
       const chat = chats.find(c => c.id === currentChatId);
@@ -793,7 +795,9 @@ function sendMessage() {
 
       // Add event listener for sending a message on "Enter" key press
       document.getElementById("userMessage").addEventListener("keydown", function(e) {
-        if (e.key === "Enter") sendMessage();
+        if (e.key === "Enter"){ 
+          sendMessage();
+        }
       });
     });
   </script>
